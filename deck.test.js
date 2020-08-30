@@ -1,18 +1,17 @@
-const { newDeck, shuffleDeck, dealCards } = require('./deck');
-
-
-/**
- * TESTS
- */
+const {
+  newDeck,
+  shuffleDeck,
+  dealCards
+} = require('./deck');
 
 /** 
- * REQUIREMENTS
+ * DECK SETUP REQUIREMENTS
  * - Should deal 10 cards per player from a deck of 60 cards
  * - Should have deck, numerated 1 through 60 with no repeated integers
  * - Should deal cards in shuffled manner
  * 
 */
-test('Should have deck of 60 cards', () => {
+test('Should deal a deck of 60 cards', () => {
   // Given
   const decks = [
     newDeck(),
@@ -23,13 +22,22 @@ test('Should have deck of 60 cards', () => {
   decks.forEach((deck) => expect(deck.length).toBe(60));
 });
 
-test('Should contain every interger from 1 to 60', () => {
+test('Should always shuffle a deck of 60 cards', () => {
+  // Given
+  const emptyDeck = [];
+  const deck = shuffleDeck(emptyDeck);
+
+  // Then 
+  expect(deck.length).toBe(60)
+});
+
+test('Should always have a deck that contains every interger from 1 to 60', () => {
   // Given
   const decks = [
     newDeck(),
     shuffleDeck(newDeck())
   ];
-  const allIntegers = decks.map(deck => {
+  const checkDecks = decks.map(deck => {
     return deck.filter(card => {
       return (
         (card == 1 || card == 60)
@@ -40,10 +48,10 @@ test('Should contain every interger from 1 to 60', () => {
   });
 
   // Then
-  allIntegers.forEach(deck => expect(deck).toBe(true));
+  checkDecks.forEach(deck => expect(deck).toBe(true));
 });
 
-test('Should contain no duplicates', () => {
+test('Should contain no duplicate cards', () => {
   // Given
   const decks = [
     newDeck(),
@@ -56,10 +64,11 @@ test('Should contain no duplicates', () => {
 });
 
 /** 
- * REQUIREMENTS
+ * DECK DEALING REQUIREMENTS
  * - Should shuffle all items
+ * - Should always deal from a deck of 60 cards
  * - Should deal exactly 10 cards per player
- * - Should have exactly 40 cards in the main deck after dealing
+ * - Should have exactly amount of players X 10 cards subtracted from the main deck after dealing
  */
 
 test('Should return the same deck shuffled', () => {
@@ -72,6 +81,16 @@ test('Should return the same deck shuffled', () => {
   expect(decks['shufffled']).not.toBe(decks['unshuffled']);
 });
 
+test('Should always deal with a deck of 60 cards', () => {
+  // Given
+  const emptyDeck = [];
+  const deck = dealCards(emptyDeck, 2);
+
+  // Then 
+  const totalSum = deck.remainingCards.length + deck.playersCards[0]['player1'].length + deck.playersCards[1]['player2'].length
+  expect(totalSum).toBe(60)
+});
+
 test('Should deal exactly 10 cards to each player', () => {
   // Given 
   const mainDeck = shuffleDeck(newDeck());
@@ -80,10 +99,12 @@ test('Should deal exactly 10 cards to each player', () => {
   const dealtCards = dealCards(mainDeck, 2);
 
   // Then
-  dealtCards.playersCards.forEach(cards => expect(Object.values(cards)[0].length).toBe(10));
+  dealtCards.playersCards.forEach(cards => {
+    expect(Object.values(cards)[0].length).toBe(10)
+  });
 });
 
-test('Should contain a main deck where the amount of players X 10 is subtracted', () => {
+test('Should contain a main deck where the (amount of players X 10) is subtracted', () => {
   // Given 
   const mainDeck = shuffleDeck(newDeck());
   const mainDeckLength = mainDeck.length;
@@ -93,5 +114,5 @@ test('Should contain a main deck where the amount of players X 10 is subtracted'
   const dealtCards = dealCards(mainDeck, numberOfPlayers);
 
   // Then
-  expect(dealtCards.remainingDeck.length).toBe(mainDeckLength - (numberOfPlayers * 10))
+  expect(dealtCards.remainingCards.length).toBe(mainDeckLength - (numberOfPlayers * 10))
 });

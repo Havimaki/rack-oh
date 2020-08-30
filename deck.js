@@ -8,14 +8,14 @@ function newDeck() {
 
 function shuffleDeck(deck = []) {
   if (deck.length == 0) {
-    return;
+    deck = newDeck();
   }
   return deck.sort(() => Math.random() - 0.5)
 }
 
 function dealCards(deck = [], playersCount) {
   if (deck.length == 0) {
-    return;
+    deck = newDeck();
   }
   const mainDeck = {
     remainingCards: {},
@@ -25,7 +25,7 @@ function dealCards(deck = [], playersCount) {
     mainDeck.playersCards.push({
       [`player${i}`]: deck.splice(0, 10)
     });
-    mainDeck.remainingDeck = deck;
+    mainDeck.remainingCards = deck;
   }
 
   return mainDeck;
