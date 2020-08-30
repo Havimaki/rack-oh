@@ -1,0 +1,23 @@
+{
+  "name": "rack-oh",
+  "version": "1.0.0",
+  "description": "An interactive, online version of the classic card game.",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Havimaki/rack-oh.git"
+  },
+  "author": "Danielle Havimaki",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Havimaki/rack-oh/issues"
+  },
+  "homepage": "https://github.com/Havimaki/rack-oh#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "jest": "^26.4.2"
+  }
+}
