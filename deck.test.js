@@ -1,7 +1,11 @@
 const {
   newDeck,
   shuffleDeck,
-  dealCards
+  reshuffleDiscardPile,
+  dealCards,
+  showDiscardPile,
+  showPlayersCards,
+  selectCardFromDiscardPile
 } = require('./deck');
 
 /** 
@@ -22,7 +26,7 @@ test('Should deal a deck of 60 cards', () => {
   decks.forEach((deck) => expect(deck.length).toBe(60));
 });
 
-test('Should always shuffle a new deck if deck is empty', () => {
+test('Should always shuffle a new deck if deck is empty or no deck if passed in', () => {
   // Given
   const emptyDeck = [];
   const deck = shuffleDeck(emptyDeck);
@@ -104,21 +108,25 @@ test('Should always deal with a deck of 60 cards', () => {
   const deck = dealCards(emptyDeck, 2);
 
   // Then 
-  const totalSum = deck.remainingCards.length + deck.playersCards[0]['player1'].length + deck.playersCards[1]['player2'].length
+  const mainDeckLength = deck.remainingCards.length;
+  const player1CardsLength = deck.players['1'].length;
+  const player2CardsLength = deck.players['2'].length;
+  const totalSum = mainDeckLength + player1CardsLength + player2CardsLength;
   expect(totalSum).toBe(60)
 });
 
 test('Should deal exactly 10 cards to each player', () => {
   // Given 
   const mainDeck = shuffleDeck(newDeck());
+  const numberOfPlayers = 2;
 
   // When
-  const dealtCards = dealCards(mainDeck, 2);
+  const dealtCards = dealCards(mainDeck, numberOfPlayers);
 
   // Then
-  dealtCards.playersCards.forEach(cards => {
-    expect(Object.values(cards)[0].length).toBe(10)
-  });
+  for (i = 1; i < numberOfPlayers; i++) {
+    expect(dealtCards.players[i].length).toBe(10)
+  }
 });
 
 test('Should contain a main deck where the (amount of players X 10) is subtracted', () => {
@@ -144,3 +152,135 @@ test('Should throw error if there are more than 4 players', () => {
     dealCards(mainDeck, numberOfPlayers)
   }).toThrowError('Cannot exceed amount of 4 players')
 });
+
+/**
+ * GAME REQUIREMENTS
+ * - Should only show selected player's cards
+ * - Should throw error if player's hand is empty
+ * - Should only show top card of discard pile
+ * - Should throw error if discard pile is empty
+ * - Should reshuffle discard pile if main deck is empty
+ * - Should throw error if attempting to reshuffle when main deck is not empty
+ * - Should be able to select only the top card from either discard pile or main deck
+ * 
+ * - Should be able to select a max of one card from current players hand
+ * - Should be able to swap both selected cards
+ * - Should only allow one turn at a time per player
+ */
+
+test('Should only show selected player\'s cards', () => {
+  // Given 
+  const mainDeck = shuffleDeck(newDeck());
+  const dealtCards = dealCards(mainDeck, 2);
+  const playerId = 1;
+
+  // When
+  const cards = showPlayersCards(dealtCards, playerId);
+
+  // Then
+  expect(cards).toBe(dealtCards.players[playerId]);
+});
+
+test('Should throw error if player\s hand is empty', () => {
+  const gameCards = {
+    remainingCards: [1, 2, 3, 4],
+    players: {
+      "1": [],
+      "2": []
+    }
+  };
+  const playerId = 1;
+
+  expect(() => {
+    showPlayersCards(gameCards, playerId)
+  }).toThrowError('Cannot display zero cards');
+});
+
+test('Should throw error if discard pile is empty', () => {
+  // Given
+  const gameCards = {
+    discardPile: []
+  };
+
+  // Then
+  expect(() => {
+    showDiscardPile(gameCards)
+  }).toThrowError('Discard pile cannot be empty')
+});
+
+test('Should throw error if main deck is not empty when attempting to reshuffle', () => {
+  // Given
+  const gameCards = {
+    remainingCards: [1, 2, 3],
+    discardPile: [4, 5, 6]
+  };
+
+  // Then
+  expect(() => {
+    reshuffleDiscardPile(gameCards)
+  }).toThrowError('Main deck needs to be empty for a reshuffle')
+});
+
+test('Should throw error if discard pile is empty when attempting to reshuffle', () => {
+  // Given
+  const gameCards = {
+    remainingCards: [],
+    discardPile: []
+  };
+
+  // Then
+  expect(() => {
+    reshuffleDiscardPile(gameCards)
+  }).toThrowError('Cannot reshuffle empty discard pile')
+});
+
+test('Should reshuffle all cards from discard pile except the top card', () => {
+  // Given
+  const remainingCards = [];
+  const discardPile = [12, 52, 13, 42, 55, 26, 17, 48];
+
+  // When
+  const reshuffledDeck = reshuffleDiscardPile({ remainingCards, discardPile });
+
+  // Then
+  expect(reshuffledDeck.discardPile).toEqual(expect.arrayContaining([discardPile[0]]));
+});
+
+test('Should reshuffle all cards from discard pile to main deck', () => {
+  // Given
+  const remainingCards = [];
+  const discardPile = [12, 52, 13, 42, 55, 26, 17, 48];
+  const updatedDiscardPile = discardPile.slice(1, discardPile.length)
+
+  // When
+  const reshuffledDeck = reshuffleDiscardPile({ remainingCards, discardPile });
+
+  // Then
+  expect(reshuffledDeck.remainingCards).toStrictEqual(expect.arrayContaining(updatedDiscardPile));
+});
+
+test('Should only show top card card of discard pile', () => {
+  // Given
+  const gameCards = {
+    discardPile: [1, 2, 3]
+  };
+
+  // When
+  const discardCard = showDiscardPile(gameCards);
+
+  // Then
+  expect(discardCard).toBe(gameCards.discardPile[0]);
+});
+
+test('Should select only top card of discard pile', () => {
+  // Given
+  const discardPile = [1, 2, 3];
+
+  // When
+  const discardCard = selectCardFromDiscardPile({ discardPile });
+
+  // Then
+  expect(discardCard).toStrictEqual([discardPile[0]]);
+});
+
+// test('Should select one card from current player\'s hand', () => { });

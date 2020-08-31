@@ -3,6 +3,7 @@
 An interactive, online version of the classic card game.
 
 ## TODO
+- [ ] Add show cards
 - [ ] Add ability to select and switch card
 - [ ] Add ability to only add card to discard pile
 - [ ] Add automatic check for winner 
