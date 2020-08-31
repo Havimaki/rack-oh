@@ -17,6 +17,11 @@ function dealCards(deck = [], playersCount) {
   if (deck.length == 0) {
     deck = newDeck();
   }
+
+  if (playersCount > 4) {
+    throw new Error('Cannot exceed amount of 4 players')
+  }
+
   const mainDeck = {
     remainingCards: {},
     playersCards: []
