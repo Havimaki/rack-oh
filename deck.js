@@ -1,4 +1,4 @@
-//===============  Game setup functions
+// ===============  Game setup functions
 
 /**
  * Returns a new deck
@@ -56,7 +56,7 @@ function dealCards(deck = [], playersCount = null) {
 };
 
 /**
- * Reshuffles discard pile and returns full game deck
+ * Reshuffles discard pile into main deck and returns full game deck
  * @param {Object} gameCards 
  * @returns {Object} gameCards
  */
@@ -75,7 +75,7 @@ function reshuffleDiscardPile(gameCards = {}) {
   return gameCards;
 }
 
-//===============  Show card functions
+// ===============  Show card functions
 /**
  * Returns curent players hand
  * @param {Object} gameCards 
@@ -104,9 +104,9 @@ function showDiscardPile(gameCards = {}) {
   return gameCards.discardPile[0];
 };
 
-// Select card functions
+// =============== Select card functions
 /**
- * 
+ * Returns removed top card of discard pile
  * @param {Object} gameCards
  * @return {Number} selectedCard
  */
@@ -116,30 +116,41 @@ function selectCardFromDiscardPile(gameCards = {}) {
   }
 
   const selectedCard = gameCards.discardPile.splice(0, 1);
-
   return selectedCard[0];
 };
 
+/**
+ * Returns removed top card of main deck
+ * @param {Object} gameCards 
+ * @return {Number} selectedCard
+ */
 function selectCardFromMainDeck(gameCards = {}) {
-  const updatedPile = gameCards.mainDeck.splice(1, gameCards.mainDeck.length);
-  const selectedCard = gameCards.mainDeck[0];
-  gameCards.mainDeck = updatedPile;
+  if (gameCards.mainDeck.length === 0) {
+    throw new Error('Main deck cannot be empty');
+  }
 
-  return selectedCard;
+  const selectedCard = gameCards.mainDeck.splice(0, 1);
+  return selectedCard[0];
 };
 
-function selectCardFromHand(cards = [], selectedCard) {
+/**
+ * Returns selected number from player's hand
+ * @param {Array} cards 
+ * @param {Number} selectedCard 
+ * @return {Number}
+ */
+function selectCardFromHand(cards = [], selectedCard = null) {
   if (cards.length === 0) {
     throw new Error('Current player\'s hand cannot be empty')
   }
 
-  if (typeof selectedCard != "number") {
-    throw new Error('Selected card must be an integer')
+  if (!selectedCard) {
+    throw new Error('Selected card must be passed in')
   }
 
   if (
-    Number(selectedCard) === selectedCard &&
-    selectedCard % 1 !== 0
+    typeof selectedCard != "number" ||
+    (Number(selectedCard) === selectedCard && selectedCard % 1 !== 0)
   ) {
     throw new Error('Selected card must be an integer')
   }
@@ -147,22 +158,23 @@ function selectCardFromHand(cards = [], selectedCard) {
   return cards.find(card => card == selectedCard);
 };
 
-//===============  Swap card functions
+// ===============  Swap card functions
 /**
- * 
- * @param {*} gameCards 
- * @param {*} playerId 
- * @param {*} selectedHandCard 
- * @param {*} selectedDeckCard 
+ * Swaps cards and returns full game deck
+ * @param {Object} gameCards 
+ * @param {Number} playerId 
+ * @param {Number} selectedHandCard 
+ * @param {Number} selectedDeckCard
+ * @return {Object} gameCards
  */
 function swapCards(gameCards = {}, playerId = null, selectedHandCard = null, selectedDeckCard = null) {
-  // update current hand
+  // Insert card into current hand
   const currentHand = gameCards.players[playerId];
   currentHand.splice(currentHand.indexOf(selectedHandCard), 0, selectedDeckCard);
   const updatedHand = currentHand.filter(card => card != selectedHandCard);
   gameCards.players[playerId] = updatedHand;
 
-  // discard card
+  // Add to discard pile
   gameCards.discardPile.unshift(selectedHandCard)
 
   // reshuffle discard pile if main deck is empty
@@ -174,6 +186,12 @@ function swapCards(gameCards = {}, playerId = null, selectedHandCard = null, sel
 };
 
 //===============  End game functions
+/**
+ * Checks if player's hand is in numerical order
+ * @param {Object} gameCards 
+ * @param {Number} playerId 
+ * @return {Boolean}
+ */
 function isRackOh(gameCards, playerId = null) {
   let isWinner = true;
   for (i = 1; i < gameCards.players[playerId].length; i++) {

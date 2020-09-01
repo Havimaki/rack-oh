@@ -306,6 +306,10 @@ test('Should reshuffle all cards from discard pile to main deck', () => {
  * - Should throw error if current player's hand is empty
  * - Should be able to select a max of one card from current players hand
  * - Should select only top card of either main deck or discard pile
+ * - Should throw error if discard pile is empty when selecting TODO
+ * - Should throw error if main deck is empty when selecting TODO
+ * - Should throw error if selectedCard not passed in TODO
+ * - Should throw error if selectedCard not number in TODO
  */
 
 test('Should select one card from current player\'s hand', () => {
