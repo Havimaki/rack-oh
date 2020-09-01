@@ -6,7 +6,7 @@ function newDeck() {
   return deck;
 };
 
-function shuffleDeck(deck = []) {
+function shuffleCards(deck = []) {
   if (deck.length == 0) {
     deck = newDeck();
   }
@@ -14,7 +14,7 @@ function shuffleDeck(deck = []) {
 };
 
 function reshuffleDiscardPile(gameCards = {}) {
-  if (gameCards.remainingCards.length != 0) {
+  if (gameCards.mainDeck.length != 0) {
     throw new Error('Main deck needs to be empty for a reshuffle');
   };
 
@@ -22,8 +22,9 @@ function reshuffleDiscardPile(gameCards = {}) {
     throw new Error('Cannot reshuffle empty discard pile')
   }
 
-  const cardsToShuffle = gameCards.discardPile.splice(1, gameCards.discardPile.length)
-  gameCards.remainingCards = shuffleDeck(cardsToShuffle);
+  const discardPile = gameCards.discardPile.splice(1, gameCards.discardPile.length)
+  gameCards.mainDeck = shuffleCards(discardPile);
+
   return gameCards;
 }
 
@@ -36,20 +37,23 @@ function dealCards(deck = [], playersCount) {
     throw new Error('Cannot exceed amount of 4 players')
   };
 
-  const mainDeck = {
-    remainingCards: [],
+  const gameCards = {
+    mainDeck: [],
     discardPile: [],
     players: {}
   };
   for (i = 1; i < playersCount + 1; i++) {
-    mainDeck.players[i] = deck.splice(0, 10);
-    mainDeck.remainingCards = deck;
+    gameCards.players[i] = deck.splice(0, 10);
+    gameCards.mainDeck = deck;
   }
 
-  return mainDeck;
+  gameCards.discardPile.push(gameCards.mainDeck[0]);
+  gameCards.mainDeck.shift();
+
+  return gameCards;
 };
 
-function showPlayersCards(gameCards = {}, playerId) {
+function showPlayersHand(gameCards = {}, playerId) {
 
   if (gameCards.players[playerId].length === 0) {
     throw new Error('Cannot display zero cards');
@@ -71,22 +75,63 @@ function selectCardFromDiscardPile(gameCards = {}) {
     throw new Error('Discard pile cannot be empty');
   }
 
-  const newDiscardPile = gameCards.discardPile.splice(1, gameCards.discardPile.length);
-  const newDiscardCard = gameCards.discardPile;
+  const updatedPile = gameCards.discardPile.splice(1, gameCards.discardPile.length);
+  const selectedCard = gameCards.discardPile;
+  gameCards.discardPile = updatedPile;
 
-  gameCards.discardPile = newDiscardPile;
-  return newDiscardCard;
+  return selectedCard;
 }
 
-// function selectCardFromHand(cards = []) { }
+function selectCardFromMainDeck(gameCards = {}) {
+  const updatedPile = gameCards.mainDeck.splice(1, gameCards.mainDeck.length);
+  const selectedCard = gameCards.mainDeck[0];
+  gameCards.mainDeck = updatedPile;
 
+  return selectedCard;
+}
+
+function selectCardFromHand(cards = [], selectedCard) {
+  if (cards.length === 0) {
+    throw new Error('Current player\'s hand cannot be empty')
+  }
+
+  if (typeof selectedCard != "number") {
+    throw new Error('Selected card must be an integer')
+  }
+
+  if (
+    Number(selectedCard) === selectedCard &&
+    selectedCard % 1 !== 0
+  ) {
+    throw new Error('Selected card must be an integer')
+  }
+
+  return cards.find(card => card == selectedCard);
+}
+
+function swapCards(gameCards = {}, playerId = null, selectedHandCard = null, selectedDeckCard = null) {
+  const currentHand = gameCards.players[playerId];
+  const indexToSwap = currentHand.indexOf(selectedHandCard);
+  currentHand.splice(indexToSwap, 0, selectedDeckCard);
+  const updatedHand = currentHand.filter(card => card != selectedHandCard);
+  gameCards.discardPile.unshift(selectedHandCard)
+  gameCards.players[playerId] = updatedHand;
+
+  if (gameCards.mainDeck.length === 0) {
+    reshuffleDiscardPile(gameCards)
+  }
+  return gameCards;
+}
 
 module.exports = {
   newDeck,
-  shuffleDeck,
+  shuffleCards,
   reshuffleDiscardPile,
   dealCards,
-  showPlayersCards,
+  showPlayersHand,
   showDiscardPile,
   selectCardFromDiscardPile,
+  selectCardFromMainDeck,
+  selectCardFromHand,
+  swapCards,
 };
