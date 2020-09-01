@@ -13,11 +13,16 @@ const {
 } = require('./deck');
 
 /** 
- * DECK SETUP REQUIREMENTS
+ * GAME SETUP REQUIREMENTS
  * - Should deal 10 cards per player from a deck of 60 cards
  * - Should have deck, numerated 1 through 60 with no repeated integers
  * - Should deal cards in shuffled manner
- * 
+ * - Should shuffle all items
+ * - Should always deal from a deck of 60 cards
+ * - Should deal exactly 10 cards per player
+ * - Should have exactly amount of players X 10 cards subtracted from the main deck after dealing
+ * - Should have a restraint of a max of 4 players
+ * - Should throw error if playersCount is null when dealing TODO
 */
 test('Should deal a deck of 60 cards', () => {
   // Given
@@ -87,15 +92,6 @@ test('Should contain no duplicate cards', () => {
   duplicates.forEach((deck) => expect(deck).toBe(false))
 });
 
-/** 
- * DECK DEALING REQUIREMENTS
- * - Should shuffle all items
- * - Should always deal from a deck of 60 cards
- * - Should deal exactly 10 cards per player
- * - Should have exactly amount of players X 10 cards subtracted from the main deck after dealing
- *  - Should have a restraint of a max of 4 players
- */
-
 test('Should return the same deck shuffled', () => {
   // Given
   const decks = {
@@ -147,8 +143,7 @@ test('Should deal exactly 10 cards to each player', () => {
     expect(dealtCards.players[i].length).toBe(10)
   }
 });
-
-test('Should always deal with 1 card in discard pile', () => {
+test('Should deal and return with 1 card in discard pile', () => {
   // Given 
   const mainDeck = shuffleCards(newDeck());
   const numberOfPlayers = 2;
@@ -185,18 +180,12 @@ test('Should throw error if there are more than 4 players', () => {
 });
 
 /**
- * GAME REQUIREMENTS
+ * SHOW CARDS REQUIREMENTS
  * - Should only show selected player's cards
  * - Should throw error if player's hand is empty
  * - Should only show top card of discard pile
  * - Should throw error if discard pile is empty
- * - Should reshuffle discard pile if main deck is empty
- * - Should throw error if attempting to reshuffle when main deck is not empty
- * - Should be able to select only the top card from either discard pile or main deck
- * 
- * - Should be able to select a max of one card from current players hand
- * - Should be able to swap both selected cards
- * - Should only allow one turn at a time per player
+ * - Should throw error if playerId is empty TODO
  */
 
 test('Should only show selected player\'s cards', () => {
@@ -238,6 +227,27 @@ test('Should throw error if discard pile is empty', () => {
     showDiscardPile(gameCards)
   }).toThrowError('Discard pile cannot be empty')
 });
+
+test('Should only show top card card of discard pile', () => {
+  // Given
+  const gameCards = {
+    discardPile: [1, 2, 3]
+  };
+
+  // When
+  const discardCard = showDiscardPile(gameCards);
+
+  // Then
+  expect(discardCard).toBe(gameCards.discardPile[0]);
+});
+
+/**
+ * SHUFFLING REQUIREMENTS
+ * - Should only show selected player's cards
+ * - Should throw error if main deck is not empty when attempting to reshuffle
+ * - Should keep top card of discard pile when reshuffling
+ * - Should add all but top card of discard pile to main deck when reshuffling
+ */
 
 test('Should throw error if main deck is not empty when attempting to reshuffle', () => {
   // Given
@@ -290,37 +300,12 @@ test('Should reshuffle all cards from discard pile to main deck', () => {
   expect(reshuffledDeck.mainDeck).toStrictEqual(expect.arrayContaining(updatedDiscardPile));
 });
 
-test('Should only show top card card of discard pile', () => {
-  // Given
-  const gameCards = {
-    discardPile: [1, 2, 3]
-  };
-
-  // When
-  const discardCard = showDiscardPile(gameCards);
-
-  // Then
-  expect(discardCard).toBe(gameCards.discardPile[0]);
-});
-
-test('Should select only top card of discard pile', () => {
-  // Given
-  const discardPile = [1, 2, 3];
-
-  // When
-  const discardCard = selectCardFromDiscardPile({ discardPile });
-
-  // Then
-  expect(discardCard).toStrictEqual([discardPile[0]]);
-});
-
 /**
- * PLAY REQUIREMENTS
+ * SELECT CARD REQUIREMENTS
  * - Should select one card from current player\'s hand
  * - Should throw error if current player's hand is empty
  * - Should be able to select a max of one card from current players hand
- * - Should be able to swap both selected cards
- * - Should only allow one turn at a time per player
+ * - Should select only top card of either main deck or discard pile
  */
 
 test('Should select one card from current player\'s hand', () => {
@@ -336,7 +321,6 @@ test('Should select one card from current player\'s hand', () => {
   // Then
   expect(selectedCard).toBe(currentHand[1])
 });
-
 
 test('Should throw error if current player\'s hand is empty', () => {
   // Given
@@ -383,14 +367,24 @@ test('Should select top card of discard pile', () => {
   // Given
   const deck = shuffleCards(newDeck());
   const gameCards = dealCards(deck, 2);
-  const topDiscardCard = [gameCards.discardPile[0]];
+  const topDiscardCard = gameCards.discardPile[0];
 
   // When
   const selectedCard = selectCardFromDiscardPile(gameCards);
 
   // Then
-  expect(selectedCard).toStrictEqual(topDiscardCard)
+  expect(selectedCard).toBe(topDiscardCard)
 });
+
+/**
+ * SWAPPING CARDS REQUIREMENTS
+ * - Should be able to swap both selected cards
+ * - Should reshuffle discard pile if main deck is empty
+ * - Should throw error if attempting to reshuffle when main deck is not empty TODO
+ * - Should throw error if playerId is not passed in when swapping TODO
+ * - Should throw error if selectedHandCard is not passed in when swapping TODO
+ * - Should throw error if selectedDeckCard is not passed in when swapping TODO
+ */
 
 test('Should swap selected card from current hand with selected card from deck', () => {
   //  Given
@@ -483,6 +477,17 @@ test('Should decrease main deck by 1 card after swapping cards', () => {
   expect(swappedCards.mainDeck.length).toBe(mainDeckLength - 1);
 });
 
+/**
+ * PLAYING REQUIREMENTS
+ * - Should only allow one turn at a time per player TODO
+ */
+
+/**
+ * END GAME REQUIREMENTS
+ * - Should annoounce winner if hand is in consecutive order
+ * - Should return winnner's playerId TODO
+ * - Should throw error if playerId is not passed in TODO
+ */
 test('Should announce rack-oh for winner', () => {
   // Given
   const playerId = 1;
@@ -516,4 +521,3 @@ test('Should not announce rack-oh for winner', () => {
   // Then
   expect(checkForRackOh).toBe(false)
 });
-
