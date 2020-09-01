@@ -9,6 +9,7 @@ const {
   selectCardFromHand,
   selectCardFromMainDeck,
   swapCards,
+  isRackOh,
 } = require('./deck');
 
 /** 
@@ -480,5 +481,39 @@ test('Should decrease main deck by 1 card after swapping cards', () => {
 
   // Then
   expect(swappedCards.mainDeck.length).toBe(mainDeckLength - 1);
+});
+
+test('Should announce rack-oh for winner', () => {
+  // Given
+  const playerId = 1;
+  const gameCards = {
+    players: {
+      "1": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      "2": [59, 58, 57, 56, 49, 48, 47, 46, 39, 38]
+    }
+  }
+
+  // When
+  const checkForRackOh = isRackOh(gameCards, playerId);
+
+  // Then
+  expect(checkForRackOh).toBe(true)
+});
+
+test('Should not announce rack-oh for winner', () => {
+  // Given
+  const playerId = 2;
+  const gameCards = {
+    players: {
+      "1": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      "2": [59, 58, 57, 56, 49, 48, 47, 46, 39, 38]
+    }
+  }
+
+  // When
+  const checkForRackOh = isRackOh(gameCards, playerId);
+
+  // Then
+  expect(checkForRackOh).toBe(false)
 });
 
