@@ -1,5 +1,4 @@
 // ===============  Game setup functions
-
 /**
  * Returns a new deck
  * @returns {Array} deck
@@ -27,15 +26,19 @@ function shuffleCards(deck = []) {
 /**
  * Return the player hands, main deck and discard pile
  * @param {Array} deck 
- * @param {Number} playersCount 
+ * @param {Number} playerCount 
  * @returns {Object} gameCards 
  */
-function dealCards(deck = [], playersCount = null) {
+function dealCards(deck = [], playerCount = null) {
   if (deck.length == 0) {
     deck = newDeck();
   };
 
-  if (playersCount > 4) {
+  if (!playerCount) {
+    throw new Error('There must be at least 2 players')
+  }
+
+  if (playerCount > 4) {
     throw new Error('Cannot exceed amount of 4 players')
   };
 
@@ -44,7 +47,7 @@ function dealCards(deck = [], playersCount = null) {
     discardPile: [],
     players: {}
   };
-  for (i = 1; i < playersCount + 1; i++) {
+  for (i = 1; i < playerCount + 1; i++) {
     gameCards.players[i] = deck.splice(0, 10);
     gameCards.mainDeck = deck;
   }
@@ -83,6 +86,9 @@ function reshuffleDiscardPile(gameCards = {}) {
  * @return {Array} 
  */
 function showPlayersHand(gameCards = {}, playerId = null) {
+  if (!playerId) {
+    throw new Error('playerId cannot be undefined')
+  }
 
   if (gameCards.players[playerId].length === 0) {
     throw new Error('Cannot display zero cards');
@@ -182,6 +188,11 @@ function swapCards(gameCards = {}, playerId = null, selectedHandCard = null, sel
     reshuffleDiscardPile(gameCards)
   }
 
+  const rackoh = checkForRackOh(gameCards, playerId);
+  if (rackoh) {
+    gameCards.winner = playerId;
+  }
+
   return gameCards;
 };
 
@@ -204,6 +215,18 @@ function isRackOh(gameCards, playerId = null) {
   return isWinner;
 };
 
+function checkForRackOh(gameCards = {}, playerId = null) {
+  if (!playerId) {
+    throw new Error('playerId cannot be undefined')
+  }
+
+  const winner = isRackOh(gameCards, playerId);
+  if (winner) {
+    return playerId;
+  }
+  return;
+};
+
 module.exports = {
   newDeck,
   shuffleCards,
@@ -215,5 +238,6 @@ module.exports = {
   selectCardFromMainDeck,
   selectCardFromHand,
   swapCards,
-  isRackOh
+  isRackOh,
+  checkForRackOh
 };

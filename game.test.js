@@ -10,7 +10,8 @@ const {
   selectCardFromMainDeck,
   swapCards,
   isRackOh,
-} = require('./deck');
+  checkForRackOh,
+} = require('./game');
 
 /** 
  * GAME SETUP REQUIREMENTS
@@ -22,7 +23,7 @@ const {
  * - Should deal exactly 10 cards per player
  * - Should have exactly amount of players X 10 cards subtracted from the main deck after dealing
  * - Should have a restraint of a max of 4 players
- * - Should throw error if playersCount is null when dealing TODO
+ * - Should throw error if playerCount is null when dealing
 */
 test('Should deal a deck of 60 cards', () => {
   // Given
@@ -143,6 +144,7 @@ test('Should deal exactly 10 cards to each player', () => {
     expect(dealtCards.players[i].length).toBe(10)
   }
 });
+
 test('Should deal and return with 1 card in discard pile', () => {
   // Given 
   const mainDeck = shuffleCards(newDeck());
@@ -179,13 +181,24 @@ test('Should throw error if there are more than 4 players', () => {
   }).toThrowError('Cannot exceed amount of 4 players')
 });
 
+test('Should throw error if there are no players', () => {
+  // Given 
+  const mainDeck = shuffleCards(newDeck());
+  const playerCount = null;
+
+  // Then
+  expect(() => {
+    dealCards(mainDeck, playerCount)
+  }).toThrowError('There must be at least 2 players')
+});
+
 /**
  * SHOW CARDS REQUIREMENTS
  * - Should only show selected player's cards
  * - Should throw error if player's hand is empty
  * - Should only show top card of discard pile
  * - Should throw error if discard pile is empty
- * - Should throw error if playerId is empty TODO
+ * - Should throw error if playerId is empty
  */
 
 test('Should only show selected player\'s cards', () => {
@@ -239,6 +252,18 @@ test('Should only show top card card of discard pile', () => {
 
   // Then
   expect(discardCard).toBe(gameCards.discardPile[0]);
+});
+
+test('Should throw  error if playerId is not passed in', () => {
+  // Given 
+  const mainDeck = shuffleCards(newDeck());
+  const dealtCards = dealCards(mainDeck, 2);
+  const playerId = null;
+
+  // Then
+  expect(() => {
+    showPlayersHand(dealtCards, playerId);
+  }).toThrowError('playerId cannot be undefined')
 });
 
 /**
@@ -481,6 +506,27 @@ test('Should decrease main deck by 1 card after swapping cards', () => {
   expect(swappedCards.mainDeck.length).toBe(mainDeckLength - 1);
 });
 
+test('Should return winner after swapping cards if player played winning hand', () => {
+  //  Given
+  const playerId = 1;
+  const gameCards = {
+    players: {
+      "1": [60, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      "2": [59, 58, 57, 56, 55, 54, 53, 52, 51, 50]
+    },
+    mainDeck: [11, 12, 13, 14, 15],
+    discardPile: [16, 17, 18, 19, 20]
+  }
+  const selectedHandCard = selectCardFromHand(gameCards.players[playerId], gameCards.players[playerId][0]);
+  const selectedMainDeckCard = 1;
+
+  // When
+  const game = swapCards(gameCards, playerId, selectedHandCard, selectedMainDeckCard)
+
+  // Then
+  expect(game.winner).toBe(playerId);
+});
+
 /**
  * PLAYING REQUIREMENTS
  * - Should only allow one turn at a time per player TODO
@@ -489,8 +535,8 @@ test('Should decrease main deck by 1 card after swapping cards', () => {
 /**
  * END GAME REQUIREMENTS
  * - Should annoounce winner if hand is in consecutive order
- * - Should return winnner's playerId TODO
- * - Should throw error if playerId is not passed in TODO
+ * - Should return winnner's playerId
+ * - Should throw error if playerId is not passed in
  */
 test('Should announce rack-oh for winner', () => {
   // Given
@@ -524,4 +570,37 @@ test('Should not announce rack-oh for winner', () => {
 
   // Then
   expect(checkForRackOh).toBe(false)
+});
+
+test('Should return playerId if player won', () => {
+  // Given
+  const playerId = 1;
+  const gameCards = {
+    players: {
+      "1": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      "2": [59, 58, 57, 56, 49, 48, 47, 46, 39, 38]
+    }
+  }
+
+  // When
+  const winner = checkForRackOh(gameCards, playerId);
+
+  // Then
+  expect(winner).toBe(playerId);
+});
+
+test('Should throw error if playerId is not passed in when checking for winner', () => {
+  // Given
+  const playerId = null;
+  const gameCards = {
+    players: {
+      "1": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      "2": [59, 58, 57, 56, 49, 48, 47, 46, 39, 38]
+    }
+  }
+
+  // When
+  expect(() => {
+    checkForRackOh(gameCards, playerId);
+  }).toThrowError('playerId cannot be undefined')
 });
