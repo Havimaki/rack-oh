@@ -4,7 +4,7 @@
   "description": "An interactive, online version of the classic card game.",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "jest": "jest --coverage"
   },
   "repository": {
     "type": "git",
@@ -16,7 +16,6 @@
     "url": "https://github.com/Havimaki/rack-oh/issues"
   },
   "homepage": "https://github.com/Havimaki/rack-oh#readme",
-  "dependencies": {},
   "devDependencies": {
     "jest": "^26.4.2"
   }

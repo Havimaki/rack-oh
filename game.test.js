@@ -331,10 +331,9 @@ test('Should reshuffle all cards from discard pile to main deck', () => {
  * - Should throw error if current player's hand is empty
  * - Should be able to select a max of one card from current players hand
  * - Should select only top card of either main deck or discard pile
- * - Should throw error if discard pile is empty when selecting TODO
- * - Should throw error if main deck is empty when selecting TODO
+ * - Should throw error if discard pile is empty when selecting
+ * - Should throw error if main deck is empty when selecting
  * - Should throw error if selectedCard not passed in TODO
- * - Should throw error if selectedCard not number in TODO
  */
 
 test('Should select one card from current player\'s hand', () => {
@@ -403,6 +402,41 @@ test('Should select top card of discard pile', () => {
 
   // Then
   expect(selectedCard).toBe(topDiscardCard)
+});
+
+test('Should throw error if discard pile is empty', () => {
+  // Given
+  const gameCards = {
+    discardPile: []
+  }
+
+  // Then
+  expect(() => {
+    selectCardFromDiscardPile(gameCards);
+  }).toThrowError('Discard pile cannot be empty');
+});
+
+test('Should throw error if main deck is empty', () => {
+  // Given
+  const gameCards = {
+    mainDeck: []
+  }
+
+  // Then
+  expect(() => {
+    selectCardFromMainDeck(gameCards);
+  }).toThrowError('Main deck cannot be empty');
+});
+
+test('Should throw error if selected card not passed in', () => {
+  // Given
+  const currentHand = [1, 2, 3];
+  const selectedCard = null;
+
+  // Then
+  expect(() => {
+    selectCardFromHand(currentHand, selectedCard);
+  }).toThrowError('Selected card must be passed in');
 });
 
 /**
