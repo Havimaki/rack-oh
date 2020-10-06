@@ -126,8 +126,8 @@ test('Should always deal with a deck of 60 cards', () => {
   const mainDeck = deck.mainDeck.length;
   const discardPile = deck.discardPile.length;
   const playerOne = deck.players['1'].length;
-  const playerTow = deck.players['2'].length;
-  const totalSum = mainDeck + discardPile + playerOne + playerTow;
+  const playerTwo = deck.players['2'].length;
+  const totalSum = mainDeck + discardPile + playerOne + playerTwo;
   expect(totalSum).toBe(60)
 });
 

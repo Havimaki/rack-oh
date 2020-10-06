@@ -3,11 +3,14 @@
 An interactive, online version of the classic card game.
 
 ## TODO
+- [ ] Setup as node app
+- [ ] Pass in playerCount to npm run script
+- [ ] Only show curent players hand
 - [ ] Add automatic check for winner in swapCards()
 - [ ] Add extra turn once isRackoh returns true
 - [ ] Add assert for inputs
 - [ ] Add multiplayer
-  - [ ] 
+  - [ ] look into meteor.js
 - [ ] Build React frontend
   - [ ] Build deck
   - [ ] Build card

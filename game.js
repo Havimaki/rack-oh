@@ -1,3 +1,8 @@
+const Redis = require("ioredis");
+const redis = new Redis();
+// client.on("error", function (error) {
+//   console.error(error);
+// });
 // ===============  Game setup functions
 /**
  * Returns a new deck
@@ -32,6 +37,7 @@ function shuffleCards(deck = []) {
 function dealCards(deck = [], playerCount = null) {
   if (deck.length == 0) {
     deck = newDeck();
+    deck = shuffleCards(deck)
   };
 
   if (!playerCount) {
@@ -55,6 +61,24 @@ function dealCards(deck = [], playerCount = null) {
   gameCards.discardPile.push(gameCards.mainDeck[0]);
   gameCards.mainDeck.shift();
 
+  // redis.set("mainDeck", gameCards.mainDeck);
+  // redis.set("discardPile", gameCards.discardPile);
+  // redis.set("player1", gameCards.players['1']);
+  // redis.set("player2", gameCards.players['1']);
+
+  // redis.get("discardPile", redis.print);
+  // redis.get("player2", redis.print);
+  // redis.get("discardPile", function (err, result) {
+  //   if (err) {
+  //     console.error(err);
+  //   } else {
+  //     console.log(result); // Promise resolves to "bar"
+  //   }
+  // });
+  // console.log({
+  //   discardCard: gameCards['discardPile'],
+  //   currentHand: gameCards['players']['2']
+  // })
   return gameCards;
 };
 

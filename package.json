@@ -4,7 +4,11 @@
   "description": "An interactive, online version of the classic card game.",
   "main": "index.js",
   "scripts": {
-    "jest": "jest --coverage"
+    "start": "nodemon ./index.js",
+    "jest": "jest --coverage",
+    "setNewDeck": "node -e 'require(\"./game\").newDeck()'",
+    "shuffleCards": "node -e 'require(\"./game\").shuffleCards()'",
+    "dealCards": "node -e 'require(\"./game\").dealCards([], 2)'"
   },
   "repository": {
     "type": "git",
@@ -17,6 +21,14 @@
   },
   "homepage": "https://github.com/Havimaki/rack-oh#readme",
   "devDependencies": {
-    "jest": "^26.4.2"
-  }
+    "jest": "^26.4.2",
+    "nodemon": "^2.0.4"
+  },
+  "dependencies": {
+    "axios": "^0.20.0",
+    "express": "^4.17.1",
+    "ioredis": "^4.17.3",
+    "redis": "^3.0.2"
+  },
+  "keywords": []
 }
