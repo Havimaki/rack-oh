@@ -25,6 +25,8 @@ const {
  * - Should have a restraint of a max of 4 players
  * - Should throw error if playerCount is null when dealing
 */
+const players = ["Danielle", "Rando"];
+
 test('Should deal a deck of 60 cards', () => {
   // Given
   const decks = [
@@ -39,10 +41,11 @@ test('Should deal a deck of 60 cards', () => {
 test('Should always shuffle a new deck if deck is empty or no deck if passed in', () => {
   // Given
   const emptyDeck = [];
-  const deck = shuffleCards(emptyDeck);
 
-  // Then 
-  expect(deck.length).toBe(60)
+  // Then
+  expect(() => {
+    shuffleCards(emptyDeck)
+  }).toThrowError('There must be at least 2 cards to shuffle')
 });
 
 test('Should always shuffle discard deck with only the deck items passed in', () => {
@@ -103,12 +106,12 @@ test('Should return the same deck shuffled', () => {
   expect(decks['shufffled']).not.toBe(decks['unshuffled']);
 });
 
-test('Should always deal a deck of cars with no duplicates between the main deck and discard pile', () => {
+test('Should always deal a deck of cars with no duplicates between the main deck and discard pile', async () => {
   // Given
   const deck = shuffleCards(newDeck());
 
   // When
-  const gameCards = dealCards(deck, 2);
+  const gameCards = await dealCards(deck, players);
 
   // Then
   const checkForDuplicates = gameCards.mainDeck.filter(deckCard => {
@@ -117,79 +120,72 @@ test('Should always deal a deck of cars with no duplicates between the main deck
   expect(checkForDuplicates).toBe(false);
 });
 
-test('Should always deal with a deck of 60 cards', () => {
+test('Should always deal with a deck of 60 cards', async () => {
   // Given
   const emptyDeck = [];
-  const deck = dealCards(emptyDeck, 2);
+  const deck = await dealCards(emptyDeck, players);
 
   // Then 
   const mainDeck = deck.mainDeck.length;
   const discardPile = deck.discardPile.length;
-  const playerOne = deck.players['1'].length;
-  const playerTwo = deck.players['2'].length;
+  const playerOne = deck.players['Danielle'].length;
+  const playerTwo = deck.players['Rando'].length;
   const totalSum = mainDeck + discardPile + playerOne + playerTwo;
   expect(totalSum).toBe(60)
 });
 
-test('Should deal exactly 10 cards to each player', () => {
+test('Should deal exactly 10 cards to each player', async () => {
   // Given 
   const mainDeck = shuffleCards(newDeck());
-  const numberOfPlayers = 2;
 
   // When
-  const dealtCards = dealCards(mainDeck, numberOfPlayers);
+  const dealtCards = await dealCards(mainDeck, players);
 
   // Then
-  for (i = 1; i < numberOfPlayers; i++) {
-    expect(dealtCards.players[i].length).toBe(10)
-  }
+  players.forEach((player) => {
+    expect(dealtCards.players[player].length).toBe(10)
+  })
 });
 
-test('Should deal and return with 1 card in discard pile', () => {
+test('Should deal and return with 1 card in discard pile', async () => {
   // Given 
   const mainDeck = shuffleCards(newDeck());
-  const numberOfPlayers = 2;
 
   // When
-  const dealtCards = dealCards(mainDeck, numberOfPlayers);
+  const dealtCards = await dealCards(mainDeck, players);
 
   // Then
   expect(dealtCards.discardPile.length).toBe(1);
 });
 
-test('Should contain a main deck where the (amount of players X 10) is subtracted', () => {
+test('Should contain a main deck where the (amount of players X 10) is subtracted', async () => {
   // Given 
   const mainDeck = shuffleCards(newDeck());
   const mainDeckLength = mainDeck.length;
-  const numberOfPlayers = 3;
+  const threePlayers = [...players, 'Rando2'];
 
   // When
-  const dealtCards = dealCards(mainDeck, numberOfPlayers);
+  const dealtCards = await dealCards(mainDeck, threePlayers);
 
   // Then
-  expect(dealtCards.mainDeck.length).toBe(mainDeckLength - dealtCards.discardPile.length - (numberOfPlayers * 10))
+  expect(dealtCards.mainDeck.length).toBe(mainDeckLength - dealtCards.discardPile.length - (threePlayers.length * 10))
 });
 
-test('Should throw error if there are more than 4 players', () => {
+test('Should throw error if there are more than 4 players', async () => {
   // Given 
   const mainDeck = shuffleCards(newDeck());
-  const numberOfPlayers = 5;
+  const fivePlayers = [...players, 'rando2', 'rando3', 'rando4'];
 
   // Then
-  expect(() => {
-    dealCards(mainDeck, numberOfPlayers)
-  }).toThrowError('Cannot exceed amount of 4 players')
+  await expect(dealCards(mainDeck, fivePlayers)).rejects.toThrow('Cannot exceed amount of 4 players')
 });
 
-test('Should throw error if there are no players', () => {
+test('Should throw error if there are no players', async () => {
   // Given 
   const mainDeck = shuffleCards(newDeck());
-  const playerCount = null;
 
   // Then
-  expect(() => {
-    dealCards(mainDeck, playerCount)
-  }).toThrowError('There must be at least 2 players')
+  await expect(dealCards(mainDeck, [])).rejects.toThrow('There must be at least 2 players')
 });
 
 /**
@@ -201,17 +197,16 @@ test('Should throw error if there are no players', () => {
  * - Should throw error if playerId is empty
  */
 
-test('Should only show selected player\'s cards', () => {
+test('Should only show selected player\'s cards', async () => {
   // Given 
   const mainDeck = shuffleCards(newDeck());
-  const dealtCards = dealCards(mainDeck, 2);
-  const playerId = 1;
-
+  const dealtCards = await dealCards(mainDeck, players);
+  const playerName = players[0];
   // When
-  const cards = showPlayersHand(dealtCards, playerId);
+  const cards = showPlayersHand(dealtCards, playerName);
 
   // Then
-  expect(cards).toBe(dealtCards.players[playerId]);
+  expect(cards).toBe(dealtCards.players[playerName]);
 });
 
 test('Should throw error if player\s hand is empty', () => {
@@ -336,12 +331,11 @@ test('Should reshuffle all cards from discard pile to main deck', () => {
  * - Should throw error if selectedCard not passed in TODO
  */
 
-test('Should select one card from current player\'s hand', () => {
+test('Should select one card from current player\'s hand', async () => {
   // Given
   const deck = shuffleCards(newDeck());
-  const gameCards = dealCards(deck, 2);
-  const playerId = 1;
-  const currentHand = showPlayersHand(gameCards, playerId)
+  const gameCards = await dealCards(deck, players);
+  const currentHand = showPlayersHand(gameCards, players[0])
 
   // When
   const selectedCard = selectCardFromHand(currentHand, currentHand[1]);
@@ -361,12 +355,11 @@ test('Should throw error if current player\'s hand is empty', () => {
   }).toThrowError('Current player\'s hand cannot be empty');
 });
 
-test('Should throw error if more than one selected card passed in', () => {
+test('Should throw error if more than one selected card passed in', async () => {
   // Given
   const deck = shuffleCards(newDeck());
-  const gameCards = dealCards(deck, 2);
-  const playerId = 1;
-  const currentHand = showPlayersHand(gameCards, playerId)
+  const gameCards = await dealCards(deck, players);
+  const currentHand = showPlayersHand(gameCards, players[0])
 
   // Then
   expect(() => {
@@ -378,10 +371,10 @@ test('Should throw error if more than one selected card passed in', () => {
   }).toThrowError('Selected card must be an integer');
 });
 
-test('Should select top card of main deck', () => {
+test('Should select top card of main deck', async () => {
   // Given
   const deck = shuffleCards(newDeck());
-  const gameCards = dealCards(deck, 2);
+  const gameCards = await dealCards(deck, players);
   const topCard = gameCards.mainDeck[0];
 
   // When
@@ -391,10 +384,10 @@ test('Should select top card of main deck', () => {
   expect(selectedCard).toBe(topCard)
 });
 
-test('Should select top card of discard pile', () => {
+test('Should select top card of discard pile', async () => {
   // Given
   const deck = shuffleCards(newDeck());
-  const gameCards = dealCards(deck, 2);
+  const gameCards = await dealCards(deck, players);
   const topDiscardCard = gameCards.discardPile[0];
 
   // When
@@ -449,92 +442,89 @@ test('Should throw error if selected card not passed in', () => {
  * - Should throw error if selectedDeckCard is not passed in when swapping TODO
  */
 
-test('Should swap selected card from current hand with selected card from deck', () => {
+test('Should swap selected card from current hand with selected card from deck', async () => {
   //  Given
   const deck = shuffleCards(newDeck());
-  const gameCards = dealCards(deck, 2);
-  const playerId = 1;
-  const currentHand = showPlayersHand(gameCards, playerId)
+  const gameCards = await dealCards(deck, players);
+  const playerName = players[0];
+  const currentHand = showPlayersHand(gameCards, playerName)
 
   const selectedHandCard = selectCardFromHand(currentHand, currentHand[1]);
   const selectedMainDeckCard = selectCardFromMainDeck(gameCards);
 
   // When
-  const swappedCards = swapCards(gameCards, playerId, selectedHandCard, selectedMainDeckCard)
+  const swappedCards = swapCards(gameCards, playerName, selectedHandCard, selectedMainDeckCard)
 
   // Then
-  const checkForSwappedCard = swappedCards.players[playerId].filter(card => card == selectedMainDeckCard).length > 0
+  const checkForSwappedCard = swappedCards.players[playerName].filter(card => card == selectedMainDeckCard).length > 0
   expect(checkForSwappedCard).toBe(true);
 });
 
-test('Should reshuffle discard pile if main deck is empty after swaping a card', () => {
+test('Should reshuffle discard pile if main deck is empty after swaping a card', async () => {
   // Given
   const deck = shuffleCards(newDeck());
-  const gameCards = dealCards(deck, 2);
-  const playerId = 1;
+  const gameCards = await dealCards(deck, players);
   const cutDeck = gameCards.mainDeck.splice(1, gameCards.mainDeck.length);
   gameCards.discardPile = gameCards.discardPile.concat(cutDeck);
   const discardPileLength = gameCards.discardPile.length;
-  const currentHand = showPlayersHand(gameCards, playerId)
+  const currentHand = showPlayersHand(gameCards, players[0])
 
   const selectedHandCard = selectCardFromHand(currentHand, currentHand[1]);
   const selectedMainDeckCard = selectCardFromMainDeck(gameCards);
 
   // When
-  swapCards(gameCards, playerId, selectedHandCard, selectedMainDeckCard)
+  swapCards(gameCards, players[0], selectedHandCard, selectedMainDeckCard)
 
   // Then
   expect(gameCards.mainDeck.length).toBe(discardPileLength)
 });
 
-test('Should maintain 10 cards in current hand after swapping cards', () => {
+test('Should maintain 10 cards in current hand after swapping cards', async () => {
   // Given
   const deck = shuffleCards(newDeck());
-  const gameCards = dealCards(deck, 2);
-  const playerId = 1;
-  const currentHand = showPlayersHand(gameCards, playerId)
+  const gameCards = await dealCards(deck, players);
+  const playerName = players[0];
+  const currentHand = showPlayersHand(gameCards, playerName)
 
   const selectedHandCard = selectCardFromHand(currentHand, currentHand[1]);
   const selectedMainDeckCard = selectCardFromMainDeck(gameCards);
 
   // When
-  const swappedCards = swapCards(gameCards, playerId, selectedHandCard, selectedMainDeckCard)
+  const swappedCards = swapCards(gameCards, playerName, selectedHandCard, selectedMainDeckCard)
 
   // Then
-  expect(swappedCards.players[playerId].length).toBe(10);
+  expect(swappedCards.players[playerName].length).toBe(10);
 });
 
-test('Should increase discard pile by 1 card after swapping cards', () => {
+test('Should increase discard pile by 1 card after swapping cards', async () => {
   // Given
   const deck = shuffleCards(newDeck());
-  const gameCards = dealCards(deck, 2);
-  const playerId = 1;
-  const currentHand = showPlayersHand(gameCards, playerId)
+  const gameCards = await dealCards(deck, players);
+  const currentHand = showPlayersHand(gameCards, players[0])
   const discardPileLength = gameCards.discardPile.length;
 
   const selectedHandCard = selectCardFromHand(currentHand, currentHand[1]);
   const selectedMainDeckCard = selectCardFromMainDeck(gameCards);
 
   // When
-  const swappedCards = swapCards(gameCards, playerId, selectedHandCard, selectedMainDeckCard)
+  const swappedCards = swapCards(gameCards, players[0], selectedHandCard, selectedMainDeckCard)
 
   // Then
   expect(swappedCards.discardPile.length).toBe(discardPileLength + 1);
 });
 
-test('Should decrease main deck by 1 card after swapping cards', () => {
+test('Should decrease main deck by 1 card after swapping cards', async () => {
   // Given
   const deck = shuffleCards(newDeck());
-  const gameCards = dealCards(deck, 2);
-  const playerId = 1;
-  const currentHand = showPlayersHand(gameCards, playerId)
+  const gameCards = await dealCards(deck, players);
+  const currentHand = showPlayersHand(gameCards, players[0])
   const mainDeckLength = gameCards.mainDeck.length;
 
   const selectedHandCard = selectCardFromHand(currentHand, currentHand[1]);
   const selectedMainDeckCard = selectCardFromMainDeck(gameCards);
 
   // When
-  const swappedCards = swapCards(gameCards, playerId, selectedHandCard, selectedMainDeckCard)
+  const swappedCards = swapCards(gameCards, players[0], selectedHandCard, selectedMainDeckCard)
 
   // Then
   expect(swappedCards.mainDeck.length).toBe(mainDeckLength - 1);
@@ -568,7 +558,7 @@ test('Should return winner after swapping cards if player played winning hand', 
 
 /**
  * END GAME REQUIREMENTS
- * - Should annoounce winner if hand is in consecutive order
+ *  - Should annoounce winner if hand is in consecutive order
  * - Should return winnner's playerId
  * - Should throw error if playerId is not passed in
  */

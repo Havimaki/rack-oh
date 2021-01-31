@@ -5,10 +5,7 @@
  */
 
 const express = require("express");
-// const path = require("path");
-const redis = require("redis");
-const axios = require("axios");
-
+// const axios = require("axios");
 const bodyParser = require("body-parser");
 const {
   // newDeck,
@@ -30,13 +27,10 @@ const {
  */
 
 const port = process.env.PORT || 5000;
-const port_redis = process.env.PORT || 6379;
 
 /**
  *  App Configuration
  */
-
-const redis_client = redis.createClient(port_redis);
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));

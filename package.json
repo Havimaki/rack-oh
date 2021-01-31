@@ -8,7 +8,7 @@
     "jest": "jest --coverage",
     "setNewDeck": "node -e 'require(\"./game\").newDeck()'",
     "shuffleCards": "node -e 'require(\"./game\").shuffleCards()'",
-    "dealCards": "node -e 'require(\"./game\").dealCards([], 2)'"
+    "dealCards": "node -e 'require(\"./game\").dealCards([], [\"danielle\", \"rando\"])'"
   },
   "repository": {
     "type": "git",

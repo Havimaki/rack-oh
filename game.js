@@ -1,8 +1,11 @@
+const {
+  redisAdd,
+  redisGet,
+} = require('./redis');
 const Redis = require("ioredis");
 const redis = new Redis();
-// client.on("error", function (error) {
-//   console.error(error);
-// });
+
+
 // ===============  Game setup functions
 /**
  * Returns a new deck
@@ -22,8 +25,8 @@ function newDeck() {
  * @returns {Array} deck 
  */
 function shuffleCards(deck = []) {
-  if (deck.length == 0) {
-    deck = newDeck();
+  if (deck.length <= 1) {
+    throw new Error('There must be at least 2 cards to shuffle')
   }
   return deck.sort(() => Math.random() - 0.5)
 };
@@ -34,17 +37,17 @@ function shuffleCards(deck = []) {
  * @param {Number} playerCount 
  * @returns {Object} gameCards 
  */
-function dealCards(deck = [], playerCount = null) {
+async function dealCards(deck = [], players = []) {
   if (deck.length == 0) {
     deck = newDeck();
     deck = shuffleCards(deck)
   };
 
-  if (!playerCount) {
+  if (players.length <= 1) {
     throw new Error('There must be at least 2 players')
   }
 
-  if (playerCount > 4) {
+  if (players.length > 4) {
     throw new Error('Cannot exceed amount of 4 players')
   };
 
@@ -53,32 +56,21 @@ function dealCards(deck = [], playerCount = null) {
     discardPile: [],
     players: {}
   };
-  for (i = 1; i < playerCount + 1; i++) {
-    gameCards.players[i] = deck.splice(0, 10);
-    gameCards.mainDeck = deck;
-  }
 
+  players.forEach(async (player) => {
+    gameCards.players[player] = deck.splice(0, 10);
+    gameCards.mainDeck = deck;
+    // await redisAdd(player, gameCards.players[player], 'array');
+    // await redisGet(player, 'array')
+  });
   gameCards.discardPile.push(gameCards.mainDeck[0]);
   gameCards.mainDeck.shift();
 
-  // redis.set("mainDeck", gameCards.mainDeck);
-  // redis.set("discardPile", gameCards.discardPile);
-  // redis.set("player1", gameCards.players['1']);
-  // redis.set("player2", gameCards.players['1']);
-
-  // redis.get("discardPile", redis.print);
-  // redis.get("player2", redis.print);
-  // redis.get("discardPile", function (err, result) {
-  //   if (err) {
-  //     console.error(err);
-  //   } else {
-  //     console.log(result); // Promise resolves to "bar"
-  //   }
-  // });
-  // console.log({
-  //   discardCard: gameCards['discardPile'],
-  //   currentHand: gameCards['players']['2']
-  // })
+  // console.log(gameCards.mainDeck);
+  // redis.sadd("mainDeck", newMainDeck);
+  // redis.smembers("mainDeck").then((r) => console.log('mainDeck:', r));
+  // redis.sadd("discardPile", gameCards.discardPile);
+  // redis.smembers("discardPile").then((r) => console.log
   return gameCards;
 };
 
@@ -109,16 +101,16 @@ function reshuffleDiscardPile(gameCards = {}) {
  * @param {Number} playerId 
  * @return {Array} 
  */
-function showPlayersHand(gameCards = {}, playerId = null) {
-  if (!playerId) {
+function showPlayersHand(gameCards = {}, player = null) {
+  if (!player) {
     throw new Error('playerId cannot be undefined')
   }
 
-  if (gameCards.players[playerId].length === 0) {
+  if (gameCards.players[player].length === 0) {
     throw new Error('Cannot display zero cards');
   };
 
-  return gameCards.players[playerId];
+  return gameCards.players[player];
 };
 
 /**
