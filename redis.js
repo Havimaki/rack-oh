@@ -5,17 +5,16 @@ const redis = new Redis();
 async function redisAdd(key, value, type) {
   switch (type) {
     case 'array':
-      console.log(key, value)
-      await redis.sadd(key, value)
+      await redis.rpush(key, value);
       break;
     default:
   }
 }
 
-function redisGet(key, type) {
+async function redisGet(key, type) {
   switch (type) {
     case 'array':
-      redis.smembers(key).then((r) => console.log(key, r));
+      await redis.lrange(key, 0, -1).then((r) => console.log(key, r));
       break;
     default:
   }

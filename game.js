@@ -2,8 +2,6 @@ const {
   redisAdd,
   redisGet,
 } = require('./redis');
-const Redis = require("ioredis");
-const redis = new Redis();
 
 
 // ===============  Game setup functions
@@ -60,17 +58,17 @@ async function dealCards(deck = [], players = []) {
   players.forEach(async (player) => {
     gameCards.players[player] = deck.splice(0, 10);
     gameCards.mainDeck = deck;
-    // await redisAdd(player, gameCards.players[player], 'array');
-    // await redisGet(player, 'array')
+    await redisAdd(player, gameCards.players[player], 'array');
+    // await redisGet(player, 'array');
   });
+
   gameCards.discardPile.push(gameCards.mainDeck[0]);
   gameCards.mainDeck.shift();
+  await redisAdd('mainDeck', gameCards.mainDeck, 'array');
 
-  // console.log(gameCards.mainDeck);
-  // redis.sadd("mainDeck", newMainDeck);
-  // redis.smembers("mainDeck").then((r) => console.log('mainDeck:', r));
-  // redis.sadd("discardPile", gameCards.discardPile);
-  // redis.smembers("discardPile").then((r) => console.log
+  await redisAdd('discardPile', gameCards.discardPile, 'array');
+  // await redisGet('mainDeck', 'array');
+  // await redisGet('discardPile', 'array');
   return gameCards;
 };
 
