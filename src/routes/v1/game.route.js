@@ -1,12 +1,11 @@
-// index.js
-
 /**
  * Required External Modules
  */
 
+
 const express = require("express");
 // const axios = require("axios");
-const bodyParser = require("body-parser");
+// const bodyParser = require("body-parser");
 const {
   // newDeck,
   // shuffleCards,
@@ -20,28 +19,35 @@ const {
   // swapCards,
   // isRackOh,
   // checkForRackOh,
-} = require('./game');
+} = require('../../controllers/game.controller');
+// const {
+//   gameController: createGame, getGame
+// } = require('../../controllers/game.controller');
 
-/**
- * App Variables
- */
+// const router = express.Router();
 
-const port = process.env.PORT || 5000;
+// router
+//   .route('/')
+//   .get(
+//     () => { },
+//     () => { },
+//     getGame
+//   );
 
-/**
- *  App Configuration
- */
+// router
+//   .route('/start')
+//   .get(
+//     () => { },
+//     () => { },
+//     createGame
+//   )
+
+// router
+//   .post('/register', validate(authValidation.register), authController.register);
+
+// module.exports = router;
+
 const app = express();
-
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-
-/**
- * Routes Definitions
- */
-app.get("/", (req, res) => {
-  res.status(200).send("RACK-OH!");
-});
 
 /**
  * Start game
@@ -62,11 +68,6 @@ app.get("/start-game", (req, res) => {
   }
 });
 
-
-
-/**
- * Server Activation
- */
-app.listen(port, () => {
-  console.log(`Listening to requests on http://localhost:${port}`)
+app.get("/", (req, res) => {
+  res.status(200).send("RACK-OH!");
 });

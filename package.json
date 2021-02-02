@@ -9,11 +9,11 @@
     ]
   },
   "scripts": {
-    "start": "nodemon ./index.js",
+    "start": "nodemon ./src/app.js",
     "jest": "jest --coverage --no-cache",
-    "setNewDeck": "node -e 'require(\"./game\").newDeck()'",
+    "setNewDeck": "node -e 'require(\"./src/controllers/game.controller\").newDeck()'",
     "shuffleCards": "node -e 'require(\"./game\").shuffleCards()'",
-    "dealCards": "redis-cli -h 127.0.0.1 -p 6379 FLUSHDB && node -e 'require(\"./game\").dealCards([], [\"danielle\", \"rando\"])'",
+    "dealCards": "redis-cli -h 127.0.0.1 -p 6379 FLUSHDB && node -e 'require(\"./src/controllers/game.controller\").dealCards([], [\"danielle\", \"rando\"])'",
     "clearCache": "redis-cli -h 127.0.0.1 -p 6379 FLUSHDB"
   },
   "repository": {
@@ -32,7 +32,10 @@
   },
   "dependencies": {
     "axios": "^0.20.0",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
+    "helmet": "^4.4.1",
+    "http-status": "^1.5.0",
     "ioredis": "^4.17.3",
     "redis": "^3.0.2"
   },

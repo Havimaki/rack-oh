@@ -1,10 +1,35 @@
 const {
+  MOVE_TYPES: {
+    SHOW_PLAYERS_HAND,
+    SHOW_DISCARD_PILE,
+    SELECT_CARD_FROM_DISCARD_PILE,
+    SELECT_CARD_FROM_MAIN_DECK,
+    SELECT_CARD_FROM_HAND,
+    SWAP_CARDS,
+  }
+} = require('../config/constants/game.constants');
+const {
   redisAdd,
-  redisGet,
-} = require('./redis');
+  // redisGet
+} = require('../services/redis.service');
+
+// ===============  MODULE FUNCTIONS
+
+const createGame = () => {
+  const deck = shuffleCards(newDeck());
+}
+
+const playMove = ({
+  type,
+
+}) => {
+
+};
 
 
-// ===============  Game setup functions
+// ===============  HELPER FUNCTIONS
+
+// ===============  Game setup
 /**
  * Returns a new deck
  * @returns {Array} deck
@@ -92,7 +117,7 @@ function reshuffleDiscardPile(gameCards = {}) {
   return gameCards;
 }
 
-// ===============  Show card functions
+// ===============  Show card 
 /**
  * Returns curent players hand
  * @param {Object} gameCards 
@@ -242,6 +267,10 @@ function checkForRackOh(gameCards = {}, playerId = null) {
 };
 
 module.exports = {
+  // MODULE FUNCTIONS
+  createGame,
+  playMove,
+  // HELPER FUNCTIONS
   newDeck,
   shuffleCards,
   dealCards,
