@@ -5,7 +5,7 @@
   "main": "index.js",
   "jest": {
     "setupFilesAfterEnv": [
-      "./setupTests.js"
+      "./tests/setupTests.js"
     ]
   },
   "scripts": {

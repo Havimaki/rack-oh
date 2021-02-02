@@ -10,7 +10,7 @@ const {
 } = require('../config/constants/game.constants');
 const {
   redisAdd,
-  // redisGet
+  redisGet
 } = require('../services/redis.service');
 
 // ===============  MODULE FUNCTIONS
