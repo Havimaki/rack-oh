@@ -7,11 +7,11 @@ const {
     SELECT_CARD_FROM_HAND,
     SWAP_CARDS,
   }
-} = require('../config/constants/game.constants');
+} = require('@config/constants/game.constants');
 const {
   redisAdd,
-  redisGet
-} = require('../services/redis.service');
+  // redisGet
+} = require('@services/redis.service');
 
 // ===============  MODULE FUNCTIONS
 

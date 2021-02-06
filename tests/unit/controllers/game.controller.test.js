@@ -11,7 +11,7 @@ const {
   swapCards,
   isRackOh,
   checkForRackOh,
-} = require('../../src/controllers/game.controller');
+} = require('@controllers/game.controller');
 
 
 // ===============  MODULE FUNCTIONS

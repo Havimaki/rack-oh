@@ -1,50 +1,16 @@
 const express = require('express');
-const {
-  createGame
-} = require('../../controllers/game.controller');
-let router = express.Router();
+const gameRoute = require('@routes/v1/game.route');
+const router = express.Router();
 
+const defaultRoutes = [
+  {
+    path: '/game',
+    route: gameRoute,
+  },
+];
 
-router.get('/', (req, res, next) => {
-  try {
-    res.status(200).send({ message: 'RACK-OH!' });
-  } catch (e) {
-    console.log(e)
-  }
-})
-
-router.get('/create-game', async (req, res) => {
-  const {
-    body: { players }
-  } = req
-  try {
-    const game = await createGame(players)
-    res.status(200).send({ game });
-  } catch (err) {
-    res.status(500).send({ err })
-  }
+defaultRoutes.forEach((route) => {
+  router.use(route.path, route.route);
 });
 
 module.exports = router;
-
-
-
-////////////////////////////////////////////////
-
-// const express = require('express');
-// const gameRoute = require('./game.route');
-// const router = express.Router();
-// // const defaultRoutes = [
-// //   {
-// //     path: '/game',
-// //     route: gameRoute,
-// //   },
-// // ];
-// // defaultRoutes.forEach((route) => {
-// //   router.use(route.path, route.route);
-// // });
-// router.get('/', function (req, res) {
-//   res.json({ 'message': 'Ping Successfull' });
-// });
-
-////////////////////////////////////////////////

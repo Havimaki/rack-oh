@@ -1,3 +1,4 @@
+require('module-alias/register')
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
@@ -23,7 +24,7 @@ app.use(cors());
 app.options('*', cors());
 
 // use express router
-app.use(router);
+app.use('/api/v1/', router);
 
 // send back a 404 error for any unknown api request
 app.use((req, res, next) => {

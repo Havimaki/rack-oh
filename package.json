@@ -6,11 +6,20 @@
   "jest": {
     "setupFilesAfterEnv": [
       "./tests/setupTests.js"
-    ]
+    ],
+    "moduleNameMapper": {
+      "@root/(.*)": "<rootDir>/$1",
+      "@config/(.*)": "<rootDir>/src/config/$1",
+      "@controllers/(.*)": "<rootDir>/src/controllers/$1",
+      "@models/(.*)": "<rootDir>/src/models/$1",
+      "@routes/(.*)": "<rootDir>/src/routes/$1",
+      "@services/(.*)": "<rootDir>/src/services/$1",
+      "@utils/(.*)": "<rootDir>/src/utils/$1"
+    }
   },
   "scripts": {
     "start": "nodemon ./src/app.js",
-    "jest": "jest --coverage",
+    "test": "jest --coverage",
     "setNewDeck": "node -e 'require(\"./src/controllers/game.controller\").newDeck()'",
     "shuffleCards": "node -e 'require(\"./game\").shuffleCards()'",
     "dealCards": "redis-cli -h 127.0.0.1 -p 6379 FLUSHDB && node -e 'require(\"./src/controllers/game.controller\").dealCards([], [\"danielle\", \"rando\"])'",
@@ -40,7 +49,18 @@
     "helmet": "^4.4.1",
     "http-status": "^1.5.0",
     "ioredis": "^4.17.3",
+    "module-alias": "^2.2.2",
     "redis": "^3.0.2"
+  },
+  "_moduleAliases": {
+    "@root": ".",
+    "@src": "./src",
+    "@config": "./src/config",
+    "@controllers": "./src/controllers",
+    "@models": "./src/models",
+    "@routes": "./src/routes",
+    "@services": "./src/services",
+    "@utils": "./src/utils"
   },
   "keywords": []
 }
