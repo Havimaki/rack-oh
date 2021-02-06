@@ -7,7 +7,7 @@ let router = express.Router();
 
 router.get('/', (req, res, next) => {
   try {
-    res.status(200).send({ message: 'RACK-OH!' })
+    res.status(200).send({ message: 'RACK-OH!' });
   } catch (e) {
     console.log(e)
   }
@@ -19,12 +19,8 @@ router.get('/create-game', async (req, res) => {
   } = req
   try {
     const game = await createGame(players)
-
-    res.send('200', {
-      game
-    })
+    res.status(200).send({ game });
   } catch (err) {
-    console.log(err)
     res.status(500).send({ err })
   }
 });
