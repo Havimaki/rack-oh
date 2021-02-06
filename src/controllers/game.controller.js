@@ -1,3 +1,6 @@
+const Redis = require("ioredis");
+const redis = new Redis();
+
 const {
   MOVE_TYPES: {
     SHOW_PLAYERS_HAND,
@@ -9,21 +12,35 @@ const {
   }
 } = require('@config/constants/game.constants');
 const {
-  redisAdd,
-  // redisGet
-} = require('@services/redis.service');
+  addToMainDeck,
+  addToDiscardPile,
+  addToPlayerHand,
+} = require('@services/game.service');
 
 // ===============  MODULE FUNCTIONS
 
+/**
+ * Sets up a new game
+ * @returns {Array} deck
+ */
 const createGame = async (players = []) => {
+  // clear cache
+  redis.flushdb();
+
+  // create game
   const deck = newDeck();
+  const shuffledCards = shuffleCards(deck);
   const game = await dealCards(
-    shuffleCards(deck),
+    shuffledCards,
     players
   );
   return game;
 }
 
+/**
+ * Returns a new deck
+ * @returns {Array} deck
+ */
 const playMove = ({
   type,
 
@@ -88,18 +105,20 @@ async function dealCards(deck = [], players = []) {
   players.forEach(async (player) => {
     gameCards.players[player] = deck.splice(0, 10);
     gameCards.mainDeck = deck;
-    await redisAdd(player, gameCards.players[player], 'array');
-    // await redisGet(player, 'array');
+    const playerhand = await addToPlayerHand(player, gameCards.players[player]);
   });
 
   gameCards.discardPile.push(gameCards.mainDeck[0]);
   gameCards.mainDeck.shift();
-  await redisAdd('mainDeck', gameCards.mainDeck, 'array');
 
-  await redisAdd('discardPile', gameCards.discardPile, 'array');
-  // await redisGet('mainDeck', 'array');
-  // await redisGet('discardPile', 'array');
-  return gameCards;
+  addToMainDeck(gameCards.mainDeck);
+  addToDiscardPile(gameCards.discardPile);
+
+  return {
+    mainDeck: gameCards.mainDeck,
+    discardPile: gameCards.discardPile,
+    ...gameCards.players,
+  };
 };
 
 /**

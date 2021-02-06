@@ -6,17 +6,18 @@ async function redisAdd(key, value, type) {
   switch (type) {
     case 'array':
       await redis.rpush(key, value);
-      break;
+      return redis.lrange(key, 0, -1).then((r) => r);
     default:
+      return;
   }
 }
 
 async function redisGet(key, type) {
   switch (type) {
     case 'array':
-      await redis.lrange(key, 0, -1).then((r) => console.log(key, r));
-      break;
+
     default:
+      return;
   }
 }
 
