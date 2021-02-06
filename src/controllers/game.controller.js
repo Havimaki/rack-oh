@@ -15,8 +15,13 @@ const {
 
 // ===============  MODULE FUNCTIONS
 
-const createGame = () => {
-  const deck = shuffleCards(newDeck());
+const createGame = async (players = []) => {
+  const deck = newDeck();
+  const game = await dealCards(
+    shuffleCards(deck),
+    players
+  );
+  return game;
 }
 
 const playMove = ({
@@ -117,7 +122,7 @@ function reshuffleDiscardPile(gameCards = {}) {
   return gameCards;
 }
 
-// ===============  Show card 
+// ===============  Show card functions
 /**
  * Returns curent players hand
  * @param {Object} gameCards 

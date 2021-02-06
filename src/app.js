@@ -1,8 +1,9 @@
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
+
 const httpStatus = require('http-status');
-const routes = require('./routes/v1');
+const router = require('./routes/v1/')
 const ApiError = require('./utils/ApiError');
 
 const app = express();
@@ -21,12 +22,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.options('*', cors());
 
-// v1 api routes
-app.use('/v1', routes);
+// use express router
+app.use(router);
 
 // send back a 404 error for any unknown api request
 app.use((req, res, next) => {
-  next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
+  next(
+    new ApiError(httpStatus.NOT_FOUND, 'NOT FOUND')
+  );
 });
 
 

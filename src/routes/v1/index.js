@@ -1,34 +1,54 @@
 const express = require('express');
-const gameRoute = require('./game.route');
-// const config = require('../../config/index');
+const {
+  createGame
+} = require('../../controllers/game.controller');
+let router = express.Router();
 
-const router = express.Router();
 
-const defaultRoutes = [
-  {
-    path: '/game',
-    route: gameRoute,
-  },
-  {
-    path: '/',
-    route: gameRoute,
-  },
-];
+router.get('/', (req, res, next) => {
+  try {
+    res.status(200).send({ message: 'RACK-OH!' })
+  } catch (e) {
+    console.log(e)
+  }
+})
 
-const devRoutes = [
-  // routes available only in development mode
-  {},
-];
+router.get('/create-game', async (req, res) => {
+  const {
+    body: { players }
+  } = req
+  try {
+    const game = await createGame(players)
 
-// defaultRoutes.forEach((route) => {
-//   router.use(route.path, route.route);
-// });
-
-/* istanbul ignore next */
-// if (config.env === 'development') {
-//   devRoutes.forEach((route) => {
-//     router.use(route.path, route.route);
-//   });
-// }
+    res.send('200', {
+      game
+    })
+  } catch (err) {
+    console.log(err)
+    res.status(500).send({ err })
+  }
+});
 
 module.exports = router;
+
+
+
+////////////////////////////////////////////////
+
+// const express = require('express');
+// const gameRoute = require('./game.route');
+// const router = express.Router();
+// // const defaultRoutes = [
+// //   {
+// //     path: '/game',
+// //     route: gameRoute,
+// //   },
+// // ];
+// // defaultRoutes.forEach((route) => {
+// //   router.use(route.path, route.route);
+// // });
+// router.get('/', function (req, res) {
+//   res.json({ 'message': 'Ping Successfull' });
+// });
+
+////////////////////////////////////////////////
