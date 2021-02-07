@@ -21,7 +21,7 @@ const {
 
 /**
  * Sets up a new game
- * @returns {Array} deck
+ * @returns {game} cards
  */
 const createGame = async (players = []) => {
   // clear cache
