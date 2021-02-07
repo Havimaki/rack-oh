@@ -4,10 +4,9 @@ const {
   createGame,
   playMove
 } = require('@controllers/game.controller');
-const session = require('express-session');
-
 let router = express.Router();
 
+// get game
 router.get('/:id', async (req, res) => {
   const {
     params: { id },
@@ -40,7 +39,7 @@ router.post('/new', async (req, res) => {
   }
 });
 
-// 
+// play move
 router.post('/move', async (req, res) => {
   const {
     body: {
