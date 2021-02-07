@@ -3,27 +3,35 @@ const {
   redisGet
 } = require('@services/redis.service');
 
+const {
+  REDIS_KEYS: {
+    PLAYER
+  }
+} = require('@config/constants/game.constants')
+
 // ==============
 // POST FUNCTIONS ////////////////////////////////////////////
 // ==============
 
 // add to main deck
-const addToMainDeck = async (cards) => {
-  return redisAdd('mainDeck', cards, 'array');
+const addToMainDeck = async (sessionId, cards) => {
+  return redisAdd(sessionId, 'mainDeck', cards, 'object');
 }
 // add to discard pile
-const addToDiscardPile = async (cards) => {
-  return redisAdd('discardPile', cards, 'array');
+const addToDiscardPile = async (sessionId, cards) => {
+  return redisAdd(sessionId, 'discardPile', cards, 'object');
 };
 // add to players hands
-const addToPlayerHand = async (player, cards) => {
-  return redisAdd(player, cards, 'array');
+const addToPlayerHand = async (sessionId, player, cards) => {
+  return redisAdd(sessionId, `${PLAYER}${player}`, cards, 'object');
 }
 
 // ==============
 // SHOW FUNCTIONS ////////////////////////////////////////////
 // ==============
 
+// get game state
+const getGameState = sessionId => redisGet(sessionId, null, 'object');
 // get current player cards
 // show discard pile card
 
@@ -47,4 +55,5 @@ module.exports = {
   addToMainDeck,
   addToDiscardPile,
   addToPlayerHand,
+  getGameState,
 }

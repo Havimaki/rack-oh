@@ -7,6 +7,11 @@ const MOVE_TYPES = {
   SWAP_CARDS: "swardCards"
 }
 
+const REDIS_KEYS = {
+  PLAYER: '{PLAYER}:'
+}
+
 module.exports = {
   MOVE_TYPES,
+  REDIS_KEYS
 }

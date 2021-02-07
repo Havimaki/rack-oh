@@ -1,3 +1,4 @@
+const session = require('express-session')
 const Redis = require("ioredis");
 const redis = new Redis();
 
@@ -15,26 +16,32 @@ const {
   addToMainDeck,
   addToDiscardPile,
   addToPlayerHand,
+  getGameState,
 } = require('@services/game.service');
 
 // ===============  MODULE FUNCTIONS
+const getGame = async (id) => {
+  const game = await getGameState(id);
+  console.log(game)
+  return game;
+}
 
 /**
  * Sets up a new game
  * @returns {game} cards
  */
-const createGame = async (players = []) => {
+const createGame = async (players = [], sessonId) => {
   // clear cache
-  redis.flushdb();
+  // redis.flushdb();
 
   // create game
   const deck = newDeck();
   const shuffledCards = shuffleCards(deck);
-  const game = await dealCards(
+  return dealCards(
     shuffledCards,
-    players
+    players,
+    sessonId
   );
-  return game;
 }
 
 /**
@@ -82,7 +89,7 @@ function shuffleCards(deck = []) {
  * @param {Number} playerCount 
  * @returns {Object} gameCards 
  */
-async function dealCards(deck = [], players = []) {
+async function dealCards(deck = [], players = [], sessionId) {
   if (deck.length == 0) {
     deck = newDeck();
     deck = shuffleCards(deck)
@@ -105,20 +112,21 @@ async function dealCards(deck = [], players = []) {
   players.forEach(async (player) => {
     gameCards.players[player] = deck.splice(0, 10);
     gameCards.mainDeck = deck;
-    const playerhand = await addToPlayerHand(player, gameCards.players[player]);
+    await addToPlayerHand(
+      sessionId,
+      player,
+      gameCards.players[player],
+    );
   });
 
   gameCards.discardPile.push(gameCards.mainDeck[0]);
   gameCards.mainDeck.shift();
 
-  addToMainDeck(gameCards.mainDeck);
-  addToDiscardPile(gameCards.discardPile);
+  await addToMainDeck(sessionId, gameCards.mainDeck);
+  await addToDiscardPile(sessionId, gameCards.discardPile);
+  const game = await getGameState(sessionId)
 
-  return {
-    mainDeck: gameCards.mainDeck,
-    discardPile: gameCards.discardPile,
-    ...gameCards.players,
-  };
+  return { ...game };
 };
 
 /**
@@ -292,6 +300,7 @@ function checkForRackOh(gameCards = {}, playerId = null) {
 
 module.exports = {
   // MODULE FUNCTIONS
+  getGame,
   createGame,
   playMove,
   // HELPER FUNCTIONS

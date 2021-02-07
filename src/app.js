@@ -1,4 +1,5 @@
 require('module-alias/register')
+const session = require('express-session')
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
@@ -22,6 +23,13 @@ app.use(express.urlencoded({ extended: true }));
 // enable cors
 app.use(cors());
 app.options('*', cors());
+
+// set session
+app.use(session({
+  secret: 'random',
+  resave: true,
+  saveUninitialized: true
+}));
 
 // use express router
 app.use('/api/v1/', router);

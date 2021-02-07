@@ -1,20 +1,41 @@
 const express = require('express');
 const {
+  getGame,
   createGame,
   playMove
 } = require('@controllers/game.controller');
+const session = require('express-session');
 
 let router = express.Router();
 
-// create game
-router.post('/new', async (req, res) => {
+router.get('/:id', async (req, res) => {
   const {
-    body: { players }
+    params: { id },
   } = req
   try {
-    const game = await createGame(players)
+    const game = await getGame(id);
+    if (Object.keys(game).length === 0) {
+      res.status(204).send({ ...game });
+    }
     res.status(200).send({ ...game });
   } catch (err) {
+    console.log(err)
+    res.status(500).send({ err })
+  }
+});
+
+// create game
+router.post('/new', async (req, res) => {
+
+  const {
+    body: { players },
+    sessionID,
+  } = req
+  try {
+    const game = await createGame(players, sessionID)
+    res.status(200).send({ sessionID, ...game });
+  } catch (err) {
+    console.log(err)
     res.status(500).send({ err })
   }
 });
