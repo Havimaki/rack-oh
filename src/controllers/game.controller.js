@@ -1,11 +1,13 @@
 // =============== IMPORTS
 const {
   gameService: {
-    addToMainDeck,
-    addToDiscardPile,
-    addToPlayerHand,
     getGameState,
     clearGameState,
+  },
+  moveService: {
+    addToPlayerHand,
+    addToMainDeck,
+    addToDiscardPile,
   }
 } = require('@services');
 
@@ -136,6 +138,24 @@ async function dealCards(deck = [], players = [], sessionId) {
  * Checks if player's hand is in numerical order
  * @param {Object} gameCards 
  * @param {Number} playerId 
+ * @return {playerId}
+ */
+function checkForRackOh(gameCards = {}, playerId = null) {
+  if (!playerId) {
+    throw new Error('playerId cannot be undefined')
+  }
+
+  const winner = isRackOh(gameCards, playerId);
+  if (winner) {
+    return playerId;
+  }
+  return;
+};
+
+/**
+ * Checks if player's hand is in numerical order
+ * @param {Object} gameCards 
+ * @param {Number} playerId 
  * @return {Boolean}
  */
 function isRackOh(gameCards, playerId = null) {
@@ -150,17 +170,6 @@ function isRackOh(gameCards, playerId = null) {
   return isWinner;
 };
 
-function checkForRackOh(gameCards = {}, playerId = null) {
-  if (!playerId) {
-    throw new Error('playerId cannot be undefined')
-  }
-
-  const winner = isRackOh(gameCards, playerId);
-  if (winner) {
-    return playerId;
-  }
-  return;
-};
 
 module.exports = {
   // MODULE FUNCTIONS
@@ -171,6 +180,6 @@ module.exports = {
   newDeck,
   shuffleCards,
   dealCards,
+  checkForRackOh,
   isRackOh,
-  checkForRackOh
 };

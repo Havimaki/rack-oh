@@ -1,13 +1,30 @@
 // =============== IMPORTS
+const {
+  redisConstants: {
+    PLAYER,
+  },
+} = require('@constants');
+
 // ===============  MODULE FUNCTIONS
+const {
+  gameController: {
+    shuffleCards,
+    checkForRackOh,
+  },
+} = require('@controllers');
+const {
+  moveService: {
+    readPlayersHand,
+    readDiscardPile,
+  },
+} = require('@services');
 
 /**
  * Returns a new deck
  * @returns {Array} deck
  */
 const playMove = ({
-  type,
-
+  type
 }) => {
 
 };
@@ -20,7 +37,7 @@ const playMove = ({
  * @param {Object} gameCards 
  * @returns {Object} gameCards
  */
-function reshuffleDiscardPile(gameCards = {}) {
+function reshuffleDiscardPile(sessionId, gameCards = {}) {
   if (gameCards.mainDeck.length != 0) {
     throw new Error('Main deck needs to be empty for a reshuffle');
   };
@@ -35,23 +52,18 @@ function reshuffleDiscardPile(gameCards = {}) {
   return gameCards;
 }
 
-// ===============  Show card functions
 /**
  * Returns curent players hand
  * @param {Object} gameCards 
  * @param {Number} playerId 
  * @return {Array} 
  */
-function showPlayersHand(gameCards = {}, player = null) {
+function showPlayersHand(sessionId, player = null) {
   if (!player) {
     throw new Error('playerId cannot be undefined')
-  }
-
-  if (gameCards.players[player].length === 0) {
-    throw new Error('Cannot display zero cards');
   };
 
-  return gameCards.players[player];
+  return readPlayersHand(sessionId, player);
 };
 
 /**
@@ -59,21 +71,17 @@ function showPlayersHand(gameCards = {}, player = null) {
  * @param {Object} gameCards 
  * @return {Array}
  */
-function showDiscardPile(gameCards = {}) {
-  if (gameCards.discardPile.length === 0) {
-    throw new Error('Discard pile cannot be empty');
-  }
-
-  return gameCards.discardPile[0];
+function showDiscardPile(sessionId) {
+  const discardPile = readDiscardPile(sessionId);
+  return discardPile[0];
 };
 
-// =============== Select card functions
 /**
  * Returns removed top card of discard pile
  * @param {Object} gameCards
  * @return {Number} selectedCard
  */
-function selectCardFromDiscardPile(gameCards = {}) {
+function selectCardFromDiscardPile(sessionId, gameCards = {}) {
   if (gameCards.discardPile.length === 0) {
     throw new Error('Discard pile cannot be empty');
   }
@@ -87,7 +95,7 @@ function selectCardFromDiscardPile(gameCards = {}) {
  * @param {Object} gameCards 
  * @return {Number} selectedCard
  */
-function selectCardFromMainDeck(gameCards = {}) {
+function selectCardFromMainDeck(sessionId, gameCards = {}) {
   if (gameCards.mainDeck.length === 0) {
     throw new Error('Main deck cannot be empty');
   }
@@ -102,7 +110,7 @@ function selectCardFromMainDeck(gameCards = {}) {
  * @param {Number} selectedCard 
  * @return {Number}
  */
-function selectCardFromHand(cards = [], selectedCard = null) {
+function selectCardFromHand(sessionId, cards = [], selectedCard = null) {
   if (cards.length === 0) {
     throw new Error('Current player\'s hand cannot be empty')
   }
@@ -112,8 +120,8 @@ function selectCardFromHand(cards = [], selectedCard = null) {
   }
 
   if (
-    typeof selectedCard != "number" ||
-    (Number(selectedCard) === selectedCard && selectedCard % 1 !== 0)
+    typeof selectedCard != "number" &&
+    Number(selectedCard) % 1 !== 0
   ) {
     throw new Error('Selected card must be an integer')
   }
@@ -121,7 +129,6 @@ function selectCardFromHand(cards = [], selectedCard = null) {
   return cards.find(card => card == selectedCard);
 };
 
-// ===============  Swap card functions
 /**
  * Swaps cards and returns full game deck
  * @param {Object} gameCards 
@@ -130,7 +137,7 @@ function selectCardFromHand(cards = [], selectedCard = null) {
  * @param {Number} selectedDeckCard
  * @return {Object} gameCards
  */
-function swapCards(gameCards = {}, playerId = null, selectedHandCard = null, selectedDeckCard = null) {
+function swapCards(sessionId, gameCards = {}, playerId = null, selectedHandCard = null, selectedDeckCard = null) {
   // Insert card into current hand
   const currentHand = gameCards.players[playerId];
   currentHand.splice(currentHand.indexOf(selectedHandCard), 0, selectedDeckCard);

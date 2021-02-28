@@ -48,7 +48,7 @@ router.post('/new', async (req, res) => {
     const gameCreate = await createGame(players, sessionID)
 
     if (!!gameCreate) {
-      res.status(200).send({ id: sessionID, ...game });
+      res.status(200).send({ id: sessionID, ...gameCreate });
     }
 
     if (!gameCreate) {
