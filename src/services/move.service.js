@@ -5,9 +5,10 @@ const {
     MAIN_DECK,
     DISCARD_PILE
   },
-} = require('@constants')
+} = require('@constants');
 const {
   redisAdd,
+  redisUpdate,
   redisGet,
 } = require('./redis.service');
 
@@ -38,18 +39,50 @@ const addToMainDeck = async (sessionId, cards) => {
  * @returns {game} cards
  */
 const addToPlayerHand = async (sessionId, player, cards) => {
-  const playerKey = `${PLAYER}${player}`
-  const session = await redisAdd(sessionId, playerKey, cards, 'object');
-  return session[playerKey];
+  const PLAYER_HAND = `${PLAYER}${player}`
+  const session = await redisAdd(sessionId, PLAYER_HAND, cards, 'object');
+  return session[PLAYER_HAND];
 }
+
+/**
+ * Updates discard pile
+ * @param sessionId
+ * @returns {game} cards
+ */
+const updateDiscardPile = async (sessionId, cards) => {
+  const session = await redisUpdate(sessionId, DISCARD_PILE, cards, 'object');
+  return session[DISCARD_PILE];
+};
+
+/**
+ * Updates main deck
+ * @param sessionId
+ * @returns {game} cards
+ */
+const updateMainDeck = async (sessionId, cards) => {
+  const session = await redisUpdate(sessionId, MAIN_DECK, cards, 'object');
+  return session[MAIN];
+};
+
+/**
+ * Updates players hand
+ * @param sessionId
+ * @returns {game} cards
+ */
+const updatePlayersHand = async (sessionId, cards) => {
+  const PLAYER_HAND = `${PLAYER}${player}`
+  const session = await redisUpdate(sessionId, PLAYER_HAND, cards, 'object');
+  return session[PLAYER_HAND];
+};
+
 
 /**
  * Returns player's hand
  * @returns {game} cards
  */
 const readPlayersHand = async (sessionId, player) => {
-  const playerKey = `${PLAYER}${player}`
-  return redisGet(sessionId, playerKey, 'array');
+  const PLAYER_HAND = `${PLAYER}${player}`
+  return redisGet(sessionId, PLAYER_HAND, 'array');
 }
 
 /**
@@ -73,6 +106,9 @@ module.exports = {
   addToMainDeck,
   addToPlayerHand,
   addToDiscardPile,
+  updateDiscardPile,
+  updateMainDeck,
+  updatePlayersHand,
   readPlayersHand,
   readDiscardPile,
 }

@@ -2,6 +2,7 @@
 const Redis = require("ioredis");
 const redis = new Redis();
 
+// ===============  MODULE FUNCTIONS
 
 async function redisAdd(sessionId, key, value, dataType) {
   switch (dataType) {
@@ -10,6 +11,17 @@ async function redisAdd(sessionId, key, value, dataType) {
       return redis.lrange(key, 0, -1).then((r) => r);
     case 'object':
       await redis.hset(sessionId, [key, value]);
+      return redis.hgetall(sessionId).then((r) => r);
+    default:
+      return;
+  }
+}
+
+async function redisUpdate(sessionId, key, value, dataType) {
+  switch (dataType) {
+    case 'array':
+    case 'object':
+      await redis.hmset(sessionId, [key, value]);
       return redis.hgetall(sessionId).then((r) => r);
     default:
       return;
@@ -33,6 +45,7 @@ async function redisDelete(key) {
 
 module.exports = {
   redisAdd,
+  redisUpdate,
   redisGet,
   redisDelete,
 }
