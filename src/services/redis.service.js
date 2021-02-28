@@ -1,3 +1,4 @@
+// =============== IMPORTS
 const Redis = require("ioredis");
 const redis = new Redis();
 
@@ -26,7 +27,12 @@ async function redisGet(sessionId, key, dataType) {
   }
 }
 
+async function redisDelete(key) {
+  return redis.del(key);
+}
+
 module.exports = {
   redisAdd,
   redisGet,
+  redisDelete,
 }

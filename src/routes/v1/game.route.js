@@ -1,57 +1,84 @@
+// =============== IMPORTS
 const express = require('express');
 const {
-  getGame,
-  createGame,
-  playMove
-} = require('@controllers/game.controller');
+  gameController: {
+    getGame,
+    createGame,
+    resetGame
+  }
+} = require('@controllers');
+const {
+  responseConstants: {
+    GAME_ALREADY_EXISTS,
+    GAME_DOES_NOT_EXIST,
+    GAME_RESET,
+  }
+} = require('@constants');
+
 let router = express.Router();
 
-// get game
+
 router.get('/:id', async (req, res) => {
   const {
     params: { id },
   } = req
   try {
-    const game = await getGame(id);
-    if (Object.keys(game).length === 0) {
-      res.status(204).send({ ...game });
+    const gameRead = await getGame(id);
+
+    if (!!gameRead) {
+      res.status(200).send({ id, ...game });
     }
-    res.status(200).send({ ...game });
+
+    if (!gameRead) {
+      res.status(404).send({ id, message: GAME_DOES_NOT_EXIST });
+    }
+
   } catch (err) {
     console.log(err)
     res.status(500).send({ err })
   }
 });
 
-// create game
 router.post('/new', async (req, res) => {
-
   const {
     body: { players },
     sessionID,
   } = req
   try {
-    const game = await createGame(players, sessionID)
-    res.status(200).send({ sessionID, ...game });
+    const gameCreate = await createGame(players, sessionID)
+
+    if (!!gameCreate) {
+      res.status(200).send({ id: sessionID, ...game });
+    }
+
+    if (!gameCreate) {
+      // TODO: always create new game, with new sessionID
+      res.status(409).send({ id: sessionID, message: GAME_ALREADY_EXISTS });
+    }
+
   } catch (err) {
-    console.log(err)
+    console.log(err);
     res.status(500).send({ err })
   }
 });
 
-// play move
-router.post('/move', async (req, res) => {
+router.post('/reset/:id', async (req, res) => {
   const {
-    body: {
-      type,
-
-    }
+    params: { id },
   } = req
   try {
-    const move = await playMove(type)
-    res
-      .status(200).send({ game });
+    const gameReset = await resetGame(id);
+
+    if (gameReset) {
+      res.status(200).send({ id, message: GAME_RESET });
+    }
+
+    if (!gameReset) {
+      res.status(404).send({ id, message: GAME_DOES_NOT_EXIST });
+    }
+
   } catch (err) {
+    console.log(err);
     res.status(500).send({ err })
   }
 });

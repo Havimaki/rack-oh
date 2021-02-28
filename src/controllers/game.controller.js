@@ -1,38 +1,27 @@
-const session = require('express-session')
-const Redis = require("ioredis");
-const redis = new Redis();
-
+// =============== IMPORTS
 const {
-  MOVE_TYPES: {
-    SHOW_PLAYERS_HAND,
-    SHOW_DISCARD_PILE,
-    SELECT_CARD_FROM_DISCARD_PILE,
-    SELECT_CARD_FROM_MAIN_DECK,
-    SELECT_CARD_FROM_HAND,
-    SWAP_CARDS,
+  gameService: {
+    addToMainDeck,
+    addToDiscardPile,
+    addToPlayerHand,
+    getGameState,
+    clearGameState,
   }
-} = require('@config/constants/game.constants');
-const {
-  addToMainDeck,
-  addToDiscardPile,
-  addToPlayerHand,
-  getGameState,
-} = require('@services/game.service');
+} = require('@services');
 
 // ===============  MODULE FUNCTIONS
-const getGame = async (id) => {
-  const game = await getGameState(id);
-  console.log(game)
-  return game;
-}
-
 /**
  * Sets up a new game
+ * @param {Array} players 
+ * @param {string} id 
  * @returns {game} cards
  */
-const createGame = async (players = [], sessonId) => {
-  // clear cache
-  // redis.flushdb();
+const createGame = async (players = [], id) => {
+  // only create new game if none exist yet
+  const game = await getGame(id);
+  if (!!game && Object.keys(game).length > 0) {
+    return false;
+  }
 
   // create game
   const deck = newDeck();
@@ -40,21 +29,35 @@ const createGame = async (players = [], sessonId) => {
   return dealCards(
     shuffledCards,
     players,
-    sessonId
+    id
   );
-}
-
-/**
- * Returns a new deck
- * @returns {Array} deck
- */
-const playMove = ({
-  type,
-
-}) => {
-
 };
 
+/**
+ * Sets up a new game
+ * @param {integer} id 
+ * @returns {game} cards
+ */
+const getGame = async (id) => {
+  const game = await getGameState(id);
+  if (Object.keys(game).length === 0) {
+    return false;
+  }
+  return game;
+};
+
+/**
+ * Sets up a new game
+ * @param {integer} id 
+ * @returns {game} cards
+ */
+const resetGame = async (id) => {
+  const gameCleared = await clearGameState(id);
+  if (!!gameCleared) {
+    return true;
+  }
+  return;
+};
 
 // ===============  HELPER FUNCTIONS
 
@@ -130,145 +133,6 @@ async function dealCards(deck = [], players = [], sessionId) {
 };
 
 /**
- * Reshuffles discard pile into main deck and returns full game deck
- * @param {Object} gameCards 
- * @returns {Object} gameCards
- */
-function reshuffleDiscardPile(gameCards = {}) {
-  if (gameCards.mainDeck.length != 0) {
-    throw new Error('Main deck needs to be empty for a reshuffle');
-  };
-
-  if (gameCards.discardPile.length === 0) {
-    throw new Error('Cannot reshuffle empty discard pile')
-  }
-
-  const discardPile = gameCards.discardPile.splice(1, gameCards.discardPile.length)
-  gameCards.mainDeck = shuffleCards(discardPile);
-
-  return gameCards;
-}
-
-// ===============  Show card functions
-/**
- * Returns curent players hand
- * @param {Object} gameCards 
- * @param {Number} playerId 
- * @return {Array} 
- */
-function showPlayersHand(gameCards = {}, player = null) {
-  if (!player) {
-    throw new Error('playerId cannot be undefined')
-  }
-
-  if (gameCards.players[player].length === 0) {
-    throw new Error('Cannot display zero cards');
-  };
-
-  return gameCards.players[player];
-};
-
-/**
- * Returns top card of discard pile
- * @param {Object} gameCards 
- * @return {Array}
- */
-function showDiscardPile(gameCards = {}) {
-  if (gameCards.discardPile.length === 0) {
-    throw new Error('Discard pile cannot be empty');
-  }
-
-  return gameCards.discardPile[0];
-};
-
-// =============== Select card functions
-/**
- * Returns removed top card of discard pile
- * @param {Object} gameCards
- * @return {Number} selectedCard
- */
-function selectCardFromDiscardPile(gameCards = {}) {
-  if (gameCards.discardPile.length === 0) {
-    throw new Error('Discard pile cannot be empty');
-  }
-
-  const selectedCard = gameCards.discardPile.splice(0, 1);
-  return selectedCard[0];
-};
-
-/**
- * Returns removed top card of main deck
- * @param {Object} gameCards 
- * @return {Number} selectedCard
- */
-function selectCardFromMainDeck(gameCards = {}) {
-  if (gameCards.mainDeck.length === 0) {
-    throw new Error('Main deck cannot be empty');
-  }
-
-  const selectedCard = gameCards.mainDeck.splice(0, 1);
-  return selectedCard[0];
-};
-
-/**
- * Returns selected number from player's hand
- * @param {Array} cards 
- * @param {Number} selectedCard 
- * @return {Number}
- */
-function selectCardFromHand(cards = [], selectedCard = null) {
-  if (cards.length === 0) {
-    throw new Error('Current player\'s hand cannot be empty')
-  }
-
-  if (!selectedCard) {
-    throw new Error('Selected card must be passed in')
-  }
-
-  if (
-    typeof selectedCard != "number" ||
-    (Number(selectedCard) === selectedCard && selectedCard % 1 !== 0)
-  ) {
-    throw new Error('Selected card must be an integer')
-  }
-
-  return cards.find(card => card == selectedCard);
-};
-
-// ===============  Swap card functions
-/**
- * Swaps cards and returns full game deck
- * @param {Object} gameCards 
- * @param {Number} playerId 
- * @param {Number} selectedHandCard 
- * @param {Number} selectedDeckCard
- * @return {Object} gameCards
- */
-function swapCards(gameCards = {}, playerId = null, selectedHandCard = null, selectedDeckCard = null) {
-  // Insert card into current hand
-  const currentHand = gameCards.players[playerId];
-  currentHand.splice(currentHand.indexOf(selectedHandCard), 0, selectedDeckCard);
-  const updatedHand = currentHand.filter(card => card != selectedHandCard);
-  gameCards.players[playerId] = updatedHand;
-
-  // Add to discard pile
-  gameCards.discardPile.unshift(selectedHandCard)
-
-  // reshuffle discard pile if main deck is empty
-  if (gameCards.mainDeck.length === 0) {
-    reshuffleDiscardPile(gameCards)
-  }
-
-  const rackoh = checkForRackOh(gameCards, playerId);
-  if (rackoh) {
-    gameCards.winner = playerId;
-  }
-
-  return gameCards;
-};
-
-//===============  End game functions
-/**
  * Checks if player's hand is in numerical order
  * @param {Object} gameCards 
  * @param {Number} playerId 
@@ -301,19 +165,12 @@ function checkForRackOh(gameCards = {}, playerId = null) {
 module.exports = {
   // MODULE FUNCTIONS
   getGame,
+  resetGame,
   createGame,
-  playMove,
   // HELPER FUNCTIONS
   newDeck,
   shuffleCards,
   dealCards,
-  reshuffleDiscardPile,
-  showPlayersHand,
-  showDiscardPile,
-  selectCardFromDiscardPile,
-  selectCardFromMainDeck,
-  selectCardFromHand,
-  swapCards,
   isRackOh,
   checkForRackOh
 };

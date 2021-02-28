@@ -1,59 +1,70 @@
+// =============== IMPORTS
+const {
+  redisConstants: {
+    PLAYER,
+    MAIN_DECK,
+    DISCARD_PILE
+  },
+} = require('@constants')
 const {
   redisAdd,
-  redisGet
-} = require('@services/redis.service');
+  redisGet,
+  redisDelete,
+} = require('./redis.service');
 
-const {
-  REDIS_KEYS: {
-    PLAYER
-  }
-} = require('@config/constants/game.constants')
 
-// ==============
-// POST FUNCTIONS ////////////////////////////////////////////
-// ==============
+// ===============  MODULE FUNCTIONS
 
-// add to main deck
+// ==== POST FUNCTIONS 
+/**
+ * Adds cards to main deck
+ * 
+ * @returns {game} cards
+ */
 const addToMainDeck = async (sessionId, cards) => {
-  return redisAdd(sessionId, 'mainDeck', cards, 'object');
+  return redisAdd(sessionId, MAIN_DECK, cards, 'object');
 }
-// add to discard pile
+
+/**
+ * Adds card to discard pile
+ * @returns {game} cards
+ */
 const addToDiscardPile = async (sessionId, cards) => {
-  return redisAdd(sessionId, 'discardPile', cards, 'object');
+  return redisAdd(sessionId, DISCARD_PILE, cards, 'object');
 };
-// add to players hands
+
+/**
+ * Adds cards to player's hand
+ * @returns {game} cards
+ */
 const addToPlayerHand = async (sessionId, player, cards) => {
   return redisAdd(sessionId, `${PLAYER}${player}`, cards, 'object');
 }
 
-// ==============
-// SHOW FUNCTIONS ////////////////////////////////////////////
-// ==============
-
-// get game state
+// ==== SHOW FUNCTIONS
 const getGameState = sessionId => redisGet(sessionId, null, 'object');
 // get current player cards
 // show discard pile card
 
-// ==============
-// SELECT FUNCTIONS ////////////////////////////////////////////
-// ==============
 
+// ==== SELECT FUNCTIONS 
 // select main deck card
 // select discard pile card
 // select players hand card
 
-// ==============
-// UPDATE FUNCTIONS ////////////////////////////////////////////
-// ==============
 
+// ==== UPDATE FUNCTIONS
 // swap cards
 // insert card into current players hand
 
+
+// ==== DELETE FUNCTIONS
+const clearGameState = sessionId => redisDelete(sessionId, null, 'object');
 
 module.exports = {
   addToMainDeck,
   addToDiscardPile,
   addToPlayerHand,
   getGameState,
+  clearGameState,
 }

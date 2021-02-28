@@ -18,6 +18,7 @@
     "moduleNameMapper": {
       "@root/(.*)": "<rootDir>/$1",
       "@config/(.*)": "<rootDir>/src/config/$1",
+      "@constants/(.*)": "<rootDir>/src/config/constants/$1",
       "@controllers/(.*)": "<rootDir>/src/controllers/$1",
       "@models/(.*)": "<rootDir>/src/models/$1",
       "@routes/(.*)": "<rootDir>/src/routes/$1",
@@ -57,6 +58,7 @@
     "@root": ".",
     "@src": "./src",
     "@config": "./src/config",
+    "@constants": "./src/config/constants",
     "@controllers": "./src/controllers",
     "@models": "./src/models",
     "@routes": "./src/routes",

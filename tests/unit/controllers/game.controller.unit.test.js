@@ -1,3 +1,4 @@
+const gameController = '@controllers/game.controller';
 const {
   newDeck,
   shuffleCards,
@@ -11,7 +12,7 @@ const {
   swapCards,
   isRackOh,
   checkForRackOh,
-} = require('@controllers/game.controller');
+} = require(gameController);
 
 
 // ===============  MODULE FUNCTIONS
