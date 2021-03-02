@@ -1,29 +1,26 @@
 // =============== IMPORTS
+
 const express = require('express');
-const {
-  gameController: {
-    getGame,
-    createGame,
-    resetGame
-  }
-} = require('@controllers');
-const {
-  responseConstants: {
-    GAME_ALREADY_EXISTS,
-    GAME_DOES_NOT_EXIST,
-    GAME_RESET,
-  }
-} = require('@constants');
+const { gameController } = require('@controllers');
+const { responseConstants } = require('@constants');
+
+// =============== CONSTS
 
 let router = express.Router();
 
+const GAME_ALREADY_EXISTS = responseConstants.GAME_ALREADY_EXISTS;
+const GAME_DOES_NOT_EXIST = responseConstants.GAME_DOES_NOT_EXIST;
+const GAME_RESET = responseConstants.GAME_RESET;
+
+
+// ===============  MODULE FUNCTIONS
 
 router.get('/:id', async (req, res) => {
   const {
     params: { id },
   } = req
   try {
-    const gameRead = await getGame(id);
+    const gameRead = await gameController.getGame(id);
 
     if (!!gameRead) {
       res.status(200).send({ id, ...game });
@@ -45,7 +42,7 @@ router.post('/new', async (req, res) => {
     sessionID,
   } = req
   try {
-    const gameCreate = await createGame(players, sessionID)
+    const gameCreate = await gameController.createGame(players, sessionID)
 
     if (!!gameCreate) {
       res.status(200).send({ id: sessionID, ...gameCreate });
@@ -67,7 +64,7 @@ router.post('/reset/:id', async (req, res) => {
     params: { id },
   } = req
   try {
-    const gameReset = await resetGame(id);
+    const gameReset = await gameController.resetGame(id);
 
     if (gameReset) {
       res.status(200).send({ id, message: GAME_RESET });

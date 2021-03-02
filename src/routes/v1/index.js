@@ -1,17 +1,21 @@
+// =============== IMPORTS
+
 const express = require('express');
 const router = express.Router();
-const gameRoute = require('@routes/v1/game.route');
-// const moveRoute = require('@routes/v1/move.route');
+const gameRoute = require('./game.route');
+const moveRoute = require('./move.route');
+
+// ===============  MODULE FUNCTIONS
 
 const defaultRoutes = [
   {
     path: '/game',
     route: gameRoute,
   },
-  // {
-  //   path: '/move',
-  //   route: moveRoute,
-  // },
+  {
+    path: '/move',
+    route: moveRoute,
+  },
 ];
 
 defaultRoutes.forEach((route) => {

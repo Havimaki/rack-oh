@@ -1,32 +1,17 @@
 // =============== IMPORTS
+
+const { redisConstants } = require('@constants');
+const { gameController } = require('@controllers');
 const {
-  redisConstants: {
-    PLAYER,
-    MAIN_DECK,
-    DISCARD_PILE,
-  },
-} = require('@constants');
-const {
-  gameService: {
-    getGameState,
-  },
-  moveService: {
-    updateDiscardPile,
-    updateMainDeck,
-  }
+  gameService,
+  moveService,
 } = require('@services');
-const {
-  gameController: {
-    shuffleCards,
-    checkForRackOh,
-  },
-} = require('@controllers');
-const {
-  moveService: {
-    readPlayersHand,
-    readDiscardPile,
-  },
-} = require('@services');
+
+// =============== CONSTS
+
+const PLAYER_KEY = redisConstants.PLAYER;
+const MAIN_DECK_KEY = redisConstants.MAIN_DECK;
+const DISCARD_PILE_KEY = redisConstants.DISCARD_PILE;
 
 // ===============  MODULE FUNCTIONS
 
@@ -54,7 +39,7 @@ async function showPlayersHand(sessionId, player = null) {
     throw new Error('playerId cannot be undefined')
   };
 
-  return readPlayersHand(sessionId, player);
+  return moveService.readPlayersHand(sessionId, player);
 };
 
 /**
@@ -63,7 +48,7 @@ async function showPlayersHand(sessionId, player = null) {
  * @return {Array}
  */
 async function showDiscardPile(sessionId) {
-  const discardPile = readDiscardPile(sessionId);
+  const discardPile = await moveService.readDiscardPile(sessionId);
   return discardPile[0];
 };
 
@@ -74,25 +59,25 @@ async function showDiscardPile(sessionId) {
  */
 async function reshuffleDiscardPile(sessionId) {
   // get session
-  const session = getGameState(sessionId);
-  if (session[MAIN_DECK].length != 0) {
+  const session = await gameService.getGameState(sessionId);
+  if (session[MAIN_DECK_KEY].length != 0) {
     throw new Error('Main deck needs to be empty for a reshuffle');
   };
 
-  if (session[DISCARD_PILE].length === 0) {
+  if (session[DISCARD_PILE_KEY].length === 0) {
     throw new Error('Cannot reshuffle empty discard pile')
   };
 
   // update discard pile
-  const reshuffledDeck = session[DISCARD_PILE].splice(1, session[DISCARD_PILE].length)
-  await updateDiscardPile(sessionId, session[DISCARD_PILE]);
+  const reshuffledDeck = session[DISCARD_PILE_KEY].splice(1, session[DISCARD_PILE_KEY].length)
+  await moveService.updateDiscardPile(sessionId, session[DISCARD_PILE_KEY]);
 
   // update main deck
-  session[MAIN_DECK] = shuffleCards(reshuffledDeck);
-  await updateMainDeck(sessionId, session[MAIN_DECK]);
+  session[MAIN_DECK_KEY] = gameController.shuffleCards(reshuffledDeck);
+  await moveService.updateMainDeck(sessionId, session[MAIN_DECK_KEY]);
 
   // get updated game
-  const game = await getGameState(sessionId);
+  const game = await gameService.getGameState(sessionId);
   return { ...game };
 }
 
@@ -103,13 +88,13 @@ async function reshuffleDiscardPile(sessionId) {
  */
 async function selectCardFromDiscardPile(sessionId) {
   // get session
-  const session = getGameState(sessionId);
-  if (session[DISCARD_PILE].length === 0) {
+  const session = await gameService.getGameState(sessionId);
+  if (session[DISCARD_PILE_KEY].length === 0) {
     throw new Error('Discard pile cannot be empty');
   }
 
-  const selectedCard = session[DISCARD_PILE].splice(0, 1);
-  await updateDiscardPile(sessionId, session[DISCARD_PILE]);
+  const selectedCard = session[DISCARD_PILE_KEY].splice(0, 1);
+  await moveService.updateDiscardPile(sessionId, session[DISCARD_PILE_KEY]);
   return selectedCard[0];
 };
 
@@ -120,13 +105,13 @@ async function selectCardFromDiscardPile(sessionId) {
  */
 async function selectCardFromMainDeck(sessionId) {
   // get session
-  const session = getGameState(sessionId);
-  if (session[MAIN_DECK].length === 0) {
+  const session = await gameService.getGameState(sessionId);
+  if (session[MAIN_DECK_KEY].length === 0) {
     throw new Error('Main deck cannot be empty');
   }
 
-  const selectedCard = session[MAIN_DECK].splice(0, 1);
-  await updateMainDeck(sessionId, session[MAIN_DECK]);
+  const selectedCard = session[MAIN_DECK_KEY].splice(0, 1);
+  await moveService.updateMainDeck(sessionId, session[MAIN_DECK_KEY]);
   return selectedCard[0];
 };
 
@@ -138,8 +123,8 @@ async function selectCardFromMainDeck(sessionId) {
  */
 async function selectCardFromHand(sessionId, selectedCard = null, player = null) {
   // get session
-  const session = getGameState(sessionId);
-  const PLAYER_HAND = PLAYER + player;
+  const session = await gameService.getGameState(sessionId);
+  const PLAYER_HAND = PLAYER_KEY + player;
   if (session[PLAYER_HAND].length === 0) {
     throw new Error('Current player\'s hand cannot be empty')
   }
@@ -186,7 +171,7 @@ async function swapCards(sessionId, gameCards = {}, playerId = null, selectedHan
     reshuffleDiscardPile(gameCards)
   }
 
-  const rackoh = checkForRackOh(gameCards, playerId);
+  const rackoh = gameController.checkForRackOh(gameCards, playerId);
   if (rackoh) {
     gameCards.winner = playerId;
   }

@@ -1,10 +1,11 @@
 // =============== IMPORTS
+
 const Redis = require("ioredis");
 const redis = new Redis();
 
 // ===============  MODULE FUNCTIONS
 
-async function redisAdd(sessionId, key, value, dataType) {
+async function create(sessionId, key, value, dataType) {
   switch (dataType) {
     case 'array':
       await redis.rpush(key, value);
@@ -17,7 +18,7 @@ async function redisAdd(sessionId, key, value, dataType) {
   }
 }
 
-async function redisUpdate(sessionId, key, value, dataType) {
+async function update(sessionId, key, value, dataType) {
   switch (dataType) {
     case 'array':
     case 'object':
@@ -28,7 +29,7 @@ async function redisUpdate(sessionId, key, value, dataType) {
   }
 }
 
-async function redisGet(sessionId, key, dataType) {
+async function read(sessionId, key, dataType) {
   switch (dataType) {
     case 'array':
       return redis.lrange(key, 0, -1).then((r) => r);
@@ -39,13 +40,13 @@ async function redisGet(sessionId, key, dataType) {
   }
 }
 
-async function redisDelete(key) {
+async function hardDelete(key) {
   return redis.del(key);
 }
 
 module.exports = {
-  redisAdd,
-  redisUpdate,
-  redisGet,
-  redisDelete,
+  create,
+  update,
+  read,
+  hardDelete,
 }

@@ -1,15 +1,11 @@
 // =============== IMPORTS
+
 const {
-  gameService: {
-    getGameState,
-    clearGameState,
-  },
-  moveService: {
-    addToPlayerHand,
-    addToMainDeck,
-    addToDiscardPile,
-  }
+  gameService,
+  moveService,
 } = require('@services');
+
+// =============== CONSTS
 
 // ===============  MODULE FUNCTIONS
 /**
@@ -41,7 +37,7 @@ const createGame = async (players = [], id) => {
  * @returns {game} cards
  */
 const getGame = async (id) => {
-  const game = await getGameState(id);
+  const game = await gameService.getGameState(id);
   if (Object.keys(game).length === 0) {
     return false;
   }
@@ -54,7 +50,7 @@ const getGame = async (id) => {
  * @returns {game} cards
  */
 const resetGame = async (id) => {
-  const gameCleared = await clearGameState(id);
+  const gameCleared = await gameService.clearGameState(id);
   if (!!gameCleared) {
     return true;
   }
@@ -117,7 +113,7 @@ async function dealCards(deck = [], players = [], sessionId) {
   players.forEach(async (player) => {
     gameCards.players[player] = deck.splice(0, 10);
     gameCards.mainDeck = deck;
-    await addToPlayerHand(
+    await moveService.addToPlayerHand(
       sessionId,
       player,
       gameCards.players[player],
@@ -127,9 +123,9 @@ async function dealCards(deck = [], players = [], sessionId) {
   gameCards.discardPile.push(gameCards.mainDeck[0]);
   gameCards.mainDeck.shift();
 
-  await addToMainDeck(sessionId, gameCards.mainDeck);
-  await addToDiscardPile(sessionId, gameCards.discardPile);
-  const game = await getGameState(sessionId)
+  await moveService.addToMainDeck(sessionId, gameCards.mainDeck);
+  await moveService.addToDiscardPile(sessionId, gameCards.discardPile);
+  const game = await gameService.getGameState(sessionId)
 
   return { ...game };
 };

@@ -1,9 +1,8 @@
 // =============== IMPORTS
-const {
-  redisGet,
-  redisDelete,
-} = require('./redis.service');
 
+const { redisService } = require('./index');
+
+// =============== CONSTS
 
 // ===============  MODULE FUNCTIONS
 
@@ -11,13 +10,13 @@ const {
  * Gets full game cards
  * @returns {object}
  */
-const getGameState = sessionId => redisGet(sessionId, null, 'object');
+const getGameState = sessionId => redisService.read(sessionId, null, 'object');
 
 /**
  * Clears game
  * @returns {integer}
  */
-const clearGameState = sessionId => redisDelete(sessionId, null, 'object');
+const clearGameState = sessionId => redisService.hardDelete(sessionId, null, 'object');
 
 module.exports = {
   getGameState,
