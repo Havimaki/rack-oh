@@ -1,6 +1,6 @@
 // =============== IMPORTS
 
-const { redisConstants } = require('@constants');
+const { redisConstants } = require('../config/constants');
 const redisService = require('./redis.service');
 
 // =============== CONSTS

@@ -3,7 +3,7 @@
 const {
   gameService,
   moveService,
-} = require('@services');
+} = require('../services/index');
 
 // =============== CONSTS
 

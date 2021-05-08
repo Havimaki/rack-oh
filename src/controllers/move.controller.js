@@ -1,10 +1,10 @@
 // =============== IMPORTS
 
-const { gameController } = require('@controllers');
+const { gameController } = require('../controllers/index');
 const {
   gameService,
   moveService,
-} = require('@services');
+} = require('../services/index');
 
 // =============== CONSTS
 
