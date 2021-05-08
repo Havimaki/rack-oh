@@ -14,7 +14,7 @@ const {
  * @param {string} id 
  * @returns {game} cards
  */
-const createGame = async (players = [], id) => {
+const createGame = async (id, players = []) => {
   // only create new game if none exist yet
   const game = await getGame(id);
   if (!!game && Object.keys(game).length > 0) {

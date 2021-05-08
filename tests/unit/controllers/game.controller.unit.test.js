@@ -19,7 +19,7 @@ describe('createGame', () => { });
 const players = ["Danielle", "Rando"];
 const deck = shuffleCards(newDeck());
 describe('newDeck', () => {
-  fit('Should deal a deck of 60 cards', () => {
+  it('Should deal a deck of 60 cards', () => {
     // Given
     const decks = [
       newDeck(),
@@ -250,7 +250,6 @@ describe('isRackoh', () => {
   });
 
 });
-
 
 describe('game requirements', () => {
   // TODO:

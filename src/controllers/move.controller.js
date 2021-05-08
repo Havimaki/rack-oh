@@ -1,6 +1,5 @@
 // =============== IMPORTS
 
-const { redisConstants } = require('@constants');
 const { gameController } = require('@controllers');
 const {
   gameService,
@@ -9,24 +8,7 @@ const {
 
 // =============== CONSTS
 
-const PLAYER_KEY = redisConstants.PLAYER;
-const MAIN_DECK_KEY = redisConstants.MAIN_DECK;
-const DISCARD_PILE_KEY = redisConstants.DISCARD_PILE;
-
 // ===============  MODULE FUNCTIONS
-
-/**
- * Returns a new deck
- * @returns {Array} deck
- */
-const playMove = ({
-  type
-}) => {
-
-};
-
-
-// ===============  HELPER FUNCTIONS
 
 /**
  * Returns curent players hand
@@ -34,12 +16,21 @@ const playMove = ({
  * @param {Number} playerId 
  * @return {Array} 
  */
-async function showPlayersHand(sessionId, player = null) {
-  if (!player) {
-    throw new Error('playerId cannot be undefined')
-  };
+async function showPlayerHand(sessionId, player = null) {
+  const session = await gameService.getGameState(sessionId);
+  if (!session) {
+    throw new Error('General error');
+  }
 
-  return moveService.readPlayersHand(sessionId, player);
+  if (!player) {
+    throw new Error('player cannot be undefined')
+  };
+  console.log(session, player)
+
+  return moveService.readPlayerHand(
+    sessionId,
+    player
+  );
 };
 
 /**
@@ -48,9 +39,60 @@ async function showPlayersHand(sessionId, player = null) {
  * @return {Array}
  */
 async function showDiscardPile(sessionId) {
-  const discardPile = await moveService.readDiscardPile(sessionId);
-  return discardPile[0];
+  const session = await gameService.getGameState(sessionId);
+  if (!session) {
+    throw new Error('General errror');
+  }
+
+  return moveService.readDiscardPile(sessionId);
 };
+
+/**
+ * Swaps cards and returns full game deck
+ * @param {Object} gameCards 
+ * @param {Number} playerId 
+ * @param {Number} selectedHandCard 
+ * @param {Number} selectedDeckCard
+ * @return {Object} gameCards
+ */
+async function updateSwappedCards(sessionId, playerId = null, selectedHandCard = null, drawPile = null) {
+  const session = await gameService.getGameState(sessionId);
+  if (!session) {
+    throw new Error('General errror');
+  }
+
+  // get deckPile card
+  switch (deck) {
+    case 'MAIN_DECK':
+
+    case 'DISCARD_PILE':
+
+    default:
+  }
+
+  // Insert card into current hand
+  const currentHand = session[playerId];
+  currentHand.splice(currentHand.indexOf(selectedHandCard), 0, selectedDeckCard);
+  const updatedHand = currentHand.filter(card => card != selectedHandCard);
+  session[playerId] = updatedHand;
+
+  // Add to discard pile
+  session.discardPile.unshift(selectedHandCard)
+
+  // reshuffle discard pile if main deck is empty
+  if (session.mainDeck.length === 0) {
+    reshuffleDiscardPile(gameCards)
+  }
+
+  const rackoh = gameController.checkForRackOh(session, playerId);
+  if (rackoh) {
+    gameCards.winner = playerId;
+  }
+
+  return gameCards;
+};
+
+// ===============  HELPER FUNCTIONS
 
 /**
  * Reshuffles discard pile into main deck and returns full game deck
@@ -81,22 +123,6 @@ async function reshuffleDiscardPile(sessionId) {
   return { ...game };
 }
 
-/**
- * Returns removed top card of discard pile
- * @param {Object} gameCards
- * @return {Number} selectedCard
- */
-async function selectCardFromDiscardPile(sessionId) {
-  // get session
-  const session = await gameService.getGameState(sessionId);
-  if (session[DISCARD_PILE_KEY].length === 0) {
-    throw new Error('Discard pile cannot be empty');
-  }
-
-  const selectedCard = session[DISCARD_PILE_KEY].splice(0, 1);
-  await moveService.updateDiscardPile(sessionId, session[DISCARD_PILE_KEY]);
-  return selectedCard[0];
-};
 
 /**
  * Returns removed top card of main deck
@@ -106,6 +132,10 @@ async function selectCardFromDiscardPile(sessionId) {
 async function selectCardFromMainDeck(sessionId) {
   // get session
   const session = await gameService.getGameState(sessionId);
+  if (!session) {
+    throw new Error('General errror');
+  }
+
   if (session[MAIN_DECK_KEY].length === 0) {
     throw new Error('Main deck cannot be empty');
   }
@@ -121,73 +151,70 @@ async function selectCardFromMainDeck(sessionId) {
  * @param {Number} selectedCard 
  * @return {Number}
  */
-async function selectCardFromHand(sessionId, selectedCard = null, player = null) {
-  // get session
+async function selectCardFromPlayerHand(sessionId, card = null, name = null) {
   const session = await gameService.getGameState(sessionId);
-  const PLAYER_HAND = PLAYER_KEY + player;
-  if (session[PLAYER_HAND].length === 0) {
-    throw new Error('Current player\'s hand cannot be empty')
+  if (!session) {
+    throw new Error('General errror');
   }
 
-  if (!selectedCard) {
-    throw new Error('Selected card must be passed in')
+  if (!card) {
+    throw new Error('card must be passed in')
   }
 
   if (
-    typeof selectedCard != "number" &&
-    Number(selectedCard) % 1 !== 0
+    typeof card != "number" &&
+    Number(card) % 1 !== 0
   ) {
     throw new Error('Selected card must be an integer');
   }
 
-  if (!cards.find(card => card == Number(selectedCard))) {
+  if (!name) {
+    throw new Error('name cannot be undefined')
+  }
+
+  const player = `${PLAYER_KEY}${name}`
+  const hand = session[player];
+
+  if (hand.length === 0) {
+    throw new Error('Current player\'s hand cannot be empty')
+  }
+
+  if (!hand.find(c => c == Number(c))) {
     throw new Error('Selected card not found in player\'s hand')
   };
 
-  const selectedCard = session[PLAYER_HAND].splice(0, 1);
-  await updatePlayerHand(sessionId, session[PLAYER_HAND]);
+  await updatePlayerHand(sessionId, player, card);
 };
 
 /**
- * Swaps cards and returns full game deck
- * @param {Object} gameCards 
- * @param {Number} playerId 
- * @param {Number} selectedHandCard 
- * @param {Number} selectedDeckCard
- * @return {Object} gameCards
+ * Returns removed top card of discard pile
+ * @param {Object} gameCards
+ * @return {Number} selectedCard
  */
-async function swapCards(sessionId, gameCards = {}, playerId = null, selectedHandCard = null, selectedDeckCard = null) {
-  // Insert card into current hand
-  const currentHand = gameCards.players[playerId];
-  currentHand.splice(currentHand.indexOf(selectedHandCard), 0, selectedDeckCard);
-  const updatedHand = currentHand.filter(card => card != selectedHandCard);
-  gameCards.players[playerId] = updatedHand;
-
-  // Add to discard pile
-  gameCards.discardPile.unshift(selectedHandCard)
-
-  // reshuffle discard pile if main deck is empty
-  if (gameCards.mainDeck.length === 0) {
-    reshuffleDiscardPile(gameCards)
+async function selectCardFromDiscardPile(sessionId) {
+  // get session
+  const session = await gameService.getGameState(sessionId);
+  if (!session) {
+    throw new Error('General errror');
   }
 
-  const rackoh = gameController.checkForRackOh(gameCards, playerId);
-  if (rackoh) {
-    gameCards.winner = playerId;
+  if (session[DISCARD_PILE_KEY].length === 0) {
+    throw new Error('Discard pile cannot be empty');
   }
 
-  return gameCards;
+  const selectedCard = session[DISCARD_PILE_KEY].splice(0, 1);
+  await moveService.updateDiscardPile(sessionId, session[DISCARD_PILE_KEY]);
+  return selectedCard[0];
 };
 
 module.exports = {
   // MODULE FUNCTIONS
-  playMove,
-  // HELPER FUNCTIONS
-  reshuffleDiscardPile,
-  showPlayersHand,
+  showPlayerHand,
   showDiscardPile,
   selectCardFromDiscardPile,
   selectCardFromMainDeck,
-  selectCardFromHand,
-  swapCards,
+  selectCardFromPlayerHand,
+  updateSwappedCards,
+  // HELPER FUNCTIONS
+  reshuffleDiscardPile,
 };

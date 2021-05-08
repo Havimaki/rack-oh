@@ -1,7 +1,7 @@
 // =============== IMPORTS
 
 const { redisConstants } = require('@constants');
-const { redisService } = require('./index');
+const redisService = require('./redis.service');
 
 // =============== CONSTS
 
@@ -66,9 +66,9 @@ const updateMainDeck = async (sessionId, cards) => {
  * @param sessionId
  * @returns {game} cards
  */
-const updatePlayersHand = async (sessionId, cards) => {
+const updatePlayerHand = async (sessionId, player, cards) => {
   const PLAYER_HAND = `${PLAYER_KEY}${player}`
-  const session = await redisService.update(sessionId, PLAYER_HAND, cards, 'object');
+  const session = await redisService.update(sessionId, player, cards, 'object');
   return session[PLAYER_HAND];
 };
 
@@ -77,7 +77,7 @@ const updatePlayersHand = async (sessionId, cards) => {
  * Returns player's hand
  * @returns {game} cards
  */
-const readPlayersHand = async (sessionId, player) => {
+const readPlayerHand = async (sessionId, player) => {
   const PLAYER_HAND = `${PLAYER_KEY}${player}`
   return redisService.read(sessionId, PLAYER_HAND, 'array');
 }
@@ -87,7 +87,8 @@ const readPlayersHand = async (sessionId, player) => {
  * @returns {game} cards
  */
 const readDiscardPile = async (sessionId) => {
-  return redisService.read(sessionId, DISCARD_PILE_KEY, 'array');
+  const discardPile = await redisService.read(sessionId, DISCARD_PILE_KEY, 'array');
+  return discardPile[0]
 }
 
 // ==== SELECT FUNCTIONS 
@@ -105,7 +106,7 @@ module.exports = {
   addToDiscardPile,
   updateDiscardPile,
   updateMainDeck,
-  updatePlayersHand,
-  readPlayersHand,
+  updatePlayerHand,
+  readPlayerHand,
   readDiscardPile,
 }
