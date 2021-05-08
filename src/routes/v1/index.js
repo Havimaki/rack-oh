@@ -13,7 +13,7 @@ const defaultRoutes = [
     route: gameRoute,
   },
   {
-    path: '/:gameId/move',
+    path: '/move',
     route: moveRoute,
   },
 ];

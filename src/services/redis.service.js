@@ -49,4 +49,4 @@ module.exports = {
   update,
   read,
   hardDelete,
-}
+};

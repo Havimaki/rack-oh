@@ -79,8 +79,9 @@ const updatePlayerHand = async (sessionId, player, cards) => {
  */
 const readPlayerHand = async (sessionId, player) => {
   const PLAYER_HAND = `${PLAYER_KEY}${player}`
-  return redisService.read(sessionId, PLAYER_HAND, 'array');
-}
+  const hand = await redisService.read(sessionId, PLAYER_HAND, 'object');
+  return hand[PLAYER_HAND];
+};
 
 /**
  * Returns discard pile
@@ -89,7 +90,7 @@ const readPlayerHand = async (sessionId, player) => {
 const readDiscardPile = async (sessionId) => {
   const discardPile = await redisService.read(sessionId, DISCARD_PILE_KEY, 'array');
   return discardPile[0]
-}
+};
 
 // ==== SELECT FUNCTIONS 
 // select main deck card
@@ -109,4 +110,4 @@ module.exports = {
   updatePlayerHand,
   readPlayerHand,
   readDiscardPile,
-}
+};

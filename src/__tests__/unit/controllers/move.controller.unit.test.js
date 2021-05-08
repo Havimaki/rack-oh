@@ -87,15 +87,12 @@ describe('player moves', () => {
     xit('Should throw  error if playerId is not passed in', async () => {
       // Given 
       const dealtCards = await dealCards(mainDeck, players);
-      console.log(dealtCards)
       const playerId = null;
 
       // Then
-      const res = await showPlayerHand(dealtCards, playerId);
-      console.log(res)
-      // await expect(() => {
-      //   showPlayerHand(dealtCards, playerId);
-      // }).toThrowError('playerId cannot be undefined')
+      await expect(() => {
+        showPlayerHand(dealtCards, playerId);
+      }).toThrowError('playerId cannot be undefined')
     });
   });
 
@@ -105,7 +102,7 @@ describe('player moves', () => {
       const deck = shuffleCards(newDeck());
       const gameCards = await dealCards(deck, players);
       const currentHand = await showPlayerHand(gameCards, players[0])
-      console.log(currentHand)
+
       // When
       const selectedCard = selectCardFromPlayerHand(currentHand, currentHand[0]);
 

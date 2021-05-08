@@ -25,7 +25,6 @@ async function showPlayerHand(sessionId, player = null) {
   if (!player) {
     throw new Error('player cannot be undefined')
   };
-  console.log(session, player)
 
   return moveService.readPlayerHand(
     sessionId,
