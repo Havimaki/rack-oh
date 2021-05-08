@@ -1,6 +1,6 @@
 // =============== IMPORTS
 
-const { redisService } = require('./index');
+const redisService = require('./redis.service');
 
 // =============== CONSTS
 

@@ -20,13 +20,13 @@ router.get('/:id', async (req, res) => {
     params: { id },
   } = req
   try {
-    const gameRead = await gameController.getGame(id);
+    const game = await gameController.getGame(id);
 
-    if (!!gameRead) {
+    if (!!game) {
       res.status(200).send({ id, ...game });
     }
 
-    if (!gameRead) {
+    if (!game) {
       res.status(404).send({ id, message: GAME_DOES_NOT_EXIST });
     }
 
@@ -42,14 +42,13 @@ router.post('/new', async (req, res) => {
     sessionID,
   } = req
   try {
-    const gameCreate = await gameController.createGame(players, sessionID)
+    const game = await gameController.createGame(sessionID, players)
 
-    if (!!gameCreate) {
-      res.status(200).send({ id: sessionID, ...gameCreate });
+    if (!!game) {
+      res.status(200).send({ id: sessionID, ...game });
     }
 
-    if (!gameCreate) {
-      // TODO: always create new game, with new sessionID
+    if (!game) {
       res.status(409).send({ id: sessionID, message: GAME_ALREADY_EXISTS });
     }
 
@@ -64,13 +63,13 @@ router.post('/reset/:id', async (req, res) => {
     params: { id },
   } = req
   try {
-    const gameReset = await gameController.resetGame(id);
+    const game = await gameController.resetGame(id);
 
-    if (gameReset) {
+    if (game) {
       res.status(200).send({ id, message: GAME_RESET });
     }
 
-    if (!gameReset) {
+    if (!game) {
       res.status(404).send({ id, message: GAME_DOES_NOT_EXIST });
     }
 
