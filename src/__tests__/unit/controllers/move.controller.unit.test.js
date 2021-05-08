@@ -3,7 +3,7 @@ const {
   redisConstants: {
     PLAYER,
   },
-} = require('../../../config/constants/index');
+} = require('@constants');
 const {
   gameController: {
     newDeck,
@@ -19,7 +19,7 @@ const {
     selectCardFromMainDeck,
     swapCards,
   }
-} = require('../../../controllers/index');
+} = require('@controllers');
 
 // ===============  MODULE FUNCTIONS
 

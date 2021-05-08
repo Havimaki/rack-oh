@@ -1,11 +1,13 @@
 // =============== IMPORTS
 const {
-  newDeck,
-  shuffleCards,
-  dealCards,
-  isRackOh,
-  checkForRackOh,
-} = require('../../../controllers/game.controller');
+  gameController: {
+    newDeck,
+    shuffleCards,
+    dealCards,
+    isRackOh,
+    checkForRackOh,
+  },
+} = require('@controllers');
 
 // ===============  MODULE FUNCTIONS
 
