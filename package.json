@@ -13,7 +13,7 @@
   },
   "jest": {
     "setupFilesAfterEnv": [
-      "./tests/setupTests.js"
+      "./src/__tests__/setupTests.js"
     ],
     "moduleNameMapper": {
       "@root/(.*)": "<rootDir>/$1",
