@@ -59,7 +59,7 @@
     "@root": ".",
     "@src": "./src",
     "@config": "./src/config",
-    "@constants": "src/config/constants",
+    "@constants": "./src/config/constants",
     "@controllers": "./src/controllers",
     "@models": "./src/models",
     "@routes": "./src/routes",
