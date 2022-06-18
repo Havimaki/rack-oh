@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile.local
     ports:
-      - 80
+      - '5000:5000'
     volumes:
       - /src/node_modules
     environment:
@@ -36,7 +36,6 @@ services:
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
-      - POSTGRES_HOST=0.0.0.0
       - POSTGRES_DB=rackoh
     ports:
       - 5432
