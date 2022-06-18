@@ -3,7 +3,8 @@ const { createClient } = require('redis');
 
 const redis = createClient({ host: 'redis', port: 6379 });
 redis.on('error', (err) => console.log('Redis Client Error', err));
-redis.on('connect', () => console.log('Redis client connected!'));
+redis.on('connect', () => console.log('Redis Client connected!'));
+redis.on('end', () => console.log('Redis Client ending'))
 
 // ===============  MODULE FUNCTIONS
 

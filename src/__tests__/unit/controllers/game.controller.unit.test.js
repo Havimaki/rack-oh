@@ -30,7 +30,7 @@ describe('newDeck', () => {
     decks.forEach((deck) => expect(deck.length).toBe(60));
   });
 
-  it('Should always have a deck that contains every interger from 1 to 60', () => {
+  xit('Should always have a deck that contains every interger from 1 to 60', () => {
     // Given
     const decks = [
       newDeck(),
@@ -50,7 +50,7 @@ describe('newDeck', () => {
     checkDecks.forEach(deck => expect(deck).toBe(true));
   });
 
-  it('Should contain no duplicate cards', () => {
+  xit('Should contain no duplicate cards', () => {
     // Given
     const decks = [
       newDeck(),
@@ -62,7 +62,7 @@ describe('newDeck', () => {
     duplicates.forEach((deck) => expect(deck).toBe(false))
   });
 
-  it('Should return the same deck shuffled', () => {
+  xit('Should return the same deck shuffled', () => {
     // Given
     const decks = {
       unshuffled: newDeck(),
@@ -75,7 +75,7 @@ describe('newDeck', () => {
 });
 
 describe('shuffleCards', () => {
-  it('Should always shuffle a new deck if deck is empty or no deck if passed in', () => {
+  xit('Should always shuffle a new deck if deck is empty or no deck if passed in', () => {
     // Given
     const emptyDeck = [];
 
@@ -85,7 +85,7 @@ describe('shuffleCards', () => {
     }).toThrowError('There must be at least 2 cards to shuffle')
   });
 
-  it('Should always shuffle discard deck with only the deck items passed in', () => {
+  xit('Should always shuffle discard deck with only the deck items passed in', () => {
     // Given
     const preShuffle = [];
     const postShuffle = [];
@@ -161,7 +161,7 @@ describe('dealCards', () => {
     expect(dealtCards.deck.length).toBe(mainDeckLength - dealtCards.discardPile.length - (threePlayers.length * 10))
   });
 
-  it('Should throw error if there are more than 4 players', async () => {
+  xit('Should throw error if there are more than 4 players', async () => {
     // Given 
     const fivePlayers = [...players, 'rando2', 'rando3', 'rando4'];
 
@@ -169,7 +169,7 @@ describe('dealCards', () => {
     await expect(dealCards(deck, fivePlayers)).rejects.toThrow('Cannot exceed amount of 4 players')
   });
 
-  it('Should throw error if there are no players', async () => {
+  xit('Should throw error if there are no players', async () => {
     // Given 
     const mainDeck = shuffleCards(newDeck());
 
@@ -180,7 +180,7 @@ describe('dealCards', () => {
 });
 
 describe('checkForRackOh', () => {
-  it('Should return playerId if player won', () => {
+  xit('Should return playerId if player won', () => {
     // Given
     const playerId = 1;
     const gameCards = {
@@ -197,7 +197,7 @@ describe('checkForRackOh', () => {
     expect(winner).toBe(playerId);
   });
 
-  it('Should throw error if playerId is not passed in when checking for winner', () => {
+  xit('Should throw error if playerId is not passed in when checking for winner', () => {
     // Given
     const playerId = null;
     const gameCards = {
@@ -253,7 +253,7 @@ describe('isRackoh', () => {
 
 describe('game requirements', () => {
   // TODO:
-  it('should only allow one turn at a time per player', () => { });
-  it('should shuffle when 1 card remaining in main deck', () => { });
+  xit('should only allow one turn at a time per player', () => { });
+  xit('should shuffle when 1 card remaining in main deck', () => { });
 })
 

@@ -1,4 +1,9 @@
+// ===============  IMPORTS
+
 const { Client } = require("pg");
+
+// ===============  INITIALIZATION
+
 const postgres = new Client({
   user: 'root',
   host: 'postgres',
@@ -8,3 +13,8 @@ const postgres = new Client({
 });
 
 postgres.connect();
+postgres.on('connect', () => console.log('Postgres client connected!'));
+postgres.on('error', (err) => console.log('Postgres Client Error!!', err));
+postgres.on('end', () => console.log('postgres Client ending'))
+
+// ===============  MODULE FUNCTIONS

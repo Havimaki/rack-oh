@@ -1,9 +1,9 @@
 // =============== IMPORTS
 
-const {
-  gameService,
-  moveService,
-} = require('../services/index');
+// const {
+//   gameService,
+//   moveService,
+// } = require('../services/index');
 
 // =============== CONSTS
 
@@ -65,9 +65,9 @@ const resetGame = async (id) => {
  * @returns {Array} deck
  */
 function newDeck() {
-  let deck = [];
-  for (i = 1; i < 61; i++) {
-    deck.push(i)
+  let deck = new Array(60);
+  for (let card = 1; card <= 60; card++) {
+    deck.push(card)
   }
   return deck;
 };
