@@ -39,6 +39,6 @@ services:
       - POSTGRES_HOST=0.0.0.0
       - POSTGRES_DB=rackoh
     ports:
-      - 5432
+      - '7000:5432'
     volumes:
       - ./db/database-seed.sql:/docker-entrypoint-initdb.d/database-seed.sql
