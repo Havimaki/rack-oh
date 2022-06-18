@@ -4,8 +4,11 @@
   "description": "An interactive, online version of the classic card game.",
   "main": "index.js",
   "scripts": {
-    "local:start": "docker-compose up",
-    "local:build": "docker-compose up --build",
+    "local:build": "docker-compose up -d --build",
+    "local:upbuild": "docker-compose up --build",
+    "local:up": "docker-compose up",
+    "local:start": "docker-compose up -d",
+    "local:down": "docker-compose down",
     "start": "nodemon ./src/app.js",
     "test": "jest --coverage",
     "setNewDeck": "node -e 'require(\"./src/controllers/game.controller\").newDeck()'",
@@ -40,21 +43,23 @@
   },
   "homepage": "https://github.com/Havimaki/rack-oh#readme",
   "engines": {
-    "node": ">=8.9.3"
+    "node": "16.15.1"
   },
   "devDependencies": {
-    "jest": "^26.4.2",
-    "nodemon": "^2.0.4"
+    "jest": "26.4.2",
+    "nodemon": "2.0.4"
   },
   "dependencies": {
-    "axios": "^0.20.0",
-    "cors": "^2.8.5",
-    "express": "^4.17.1",
-    "express-session": "^1.17.1",
-    "helmet": "^4.4.1",
-    "http-status": "^1.5.0",
-    "module-alias": "^2.2.2",
-    "redis": "^3.1.2"
+    "axios": "0.20.0",
+    "cors": "2.8.5",
+    "express": "4.17.1",
+    "express-session": "1.17.1",
+    "helmet": "4.4.1",
+    "http-status": "1.5.0",
+    "module-alias": "2.2.2",
+    "pg": "^8.7.3",
+    "redis": "3.1.2",
+    "sequelize": "^6.21.0"
   },
   "_moduleAliases": {
     "@root": ".",
