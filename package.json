@@ -4,6 +4,8 @@
   "description": "An interactive, online version of the classic card game.",
   "main": "index.js",
   "scripts": {
+    "local:start": "docker-compose up",
+    "local:build": "docker-compose up --build",
     "start": "nodemon ./src/app.js",
     "test": "jest --coverage",
     "setNewDeck": "node -e 'require(\"./src/controllers/game.controller\").newDeck()'",
@@ -51,9 +53,8 @@
     "express-session": "^1.17.1",
     "helmet": "^4.4.1",
     "http-status": "^1.5.0",
-    "ioredis": "^4.17.3",
     "module-alias": "^2.2.2",
-    "redis": "^3.0.2"
+    "redis": "^3.1.2"
   },
   "_moduleAliases": {
     "@root": ".",

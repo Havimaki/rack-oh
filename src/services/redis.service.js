@@ -1,7 +1,9 @@
 // =============== IMPORTS
+const { createClient } = require('redis');
 
-const Redis = require("ioredis");
-const redis = new Redis();
+const redis = createClient({ host: 'redis', port: 6379 });
+redis.on('error', (err) => console.log('Redis Client Error', err));
+redis.on('connect', () => console.log('Connected!'));
 
 // ===============  MODULE FUNCTIONS
 
