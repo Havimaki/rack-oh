@@ -2,7 +2,8 @@
 
 An interactive, online version of the classic card game.
  
-![image](https://user-images.githubusercontent.com/21206175/174420246-eb00a473-c51c-4a18-8ffe-fb6846805222.png)
+![image](https://user-images.githubusercontent.com/21206175/174420259-38f1bc15-8619-482b-992d-1009132118b4.png)
+
 
 
  ---
