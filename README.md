@@ -6,20 +6,18 @@ An interactive, online version of the classic card game.
 
  ---
 
- This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
 
-Run the backend
 
 ```
+// start Redis server and backend server
+redis-server
 npm run start
 ```
 
-
-Run tests
-
 ```
+// run tests
 npm run test
 ```
 
