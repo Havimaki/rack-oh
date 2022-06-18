@@ -9,7 +9,7 @@ An interactive, online version of the classic card game.
 
 ## Available Scripts
 
-start Redis server and backend server
+run server
 ```
 redis-server
 npm run start
