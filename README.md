@@ -1,6 +1,6 @@
 # rack-oh
 
-An interactive, online version of the classic card game.
+[ WIP ] An interactive, online version of the classic card game.
  
 ![image](https://user-images.githubusercontent.com/21206175/174420259-38f1bc15-8619-482b-992d-1009132118b4.png)
 
