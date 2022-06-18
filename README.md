@@ -23,14 +23,16 @@ npm run test
  ---
 
 ## TODO
-- [ ] Setup as node app
+- [ ] Containerize 'er up
+- [ ] Switch to postgres
+
+
+### GAME TODO'S
 - [ ] Only show curent players hand
 - [ ] Add automatic check for winner in swapCards()
 - [ ] Add extra turn once isRackoh returns true
-- [ ] Add assert for inputs
-- [ ] Add multiplayer
-  - [ ] look into meteor.js
 - [ ] Build React frontend
+  - [ ] look into meteor.js
   - [ ] Build deck
   - [ ] Build card
   - [ ] Build current hand
