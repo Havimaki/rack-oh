@@ -6,6 +6,7 @@
   "scripts": {
     "local:build": "docker-compose up -d --build",
     "local:upbuild": "docker-compose up --build",
+    "local:rebuild": "docker-compose down && docker-compose up --build",
     "local:up": "docker-compose up",
     "local:start": "docker-compose up -d",
     "local:down": "docker-compose down",
@@ -50,7 +51,6 @@
     "nodemon": "2.0.4"
   },
   "dependencies": {
-    "axios": "0.20.0",
     "cors": "2.8.5",
     "express": "4.17.1",
     "express-session": "1.17.1",

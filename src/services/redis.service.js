@@ -1,6 +1,8 @@
 // =============== IMPORTS
 const { createClient } = require('redis');
 
+// ===============  INITIALIZATION
+
 const redis = createClient({ host: 'redis', port: 6379 });
 redis.on('error', (err) => console.log('Redis Client Error', err));
 redis.on('connect', () => console.log('Redis client connected!'));
