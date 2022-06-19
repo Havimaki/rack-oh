@@ -6,29 +6,29 @@ const postgresService = require('./postgres.service');
 
 // ===============  MODULE FUNCTIONS
 
-const readGame = async (sessionId) => {
-  console.log(`Reading game ${sessionId}`)
+const readDeck = async (sessionId) => {
+  console.log(`Reading to deck ${sessionId}`)
   const query = `SELECT * FROM games where session_id = $1`;
   const variables = [sessionId];
   return postgresService.read(query, variables);
 }
 
-const writeGame = async (sessionId) => {
-  console.log(`Writing game ${sessionId}`)
+const writeDeck = async (sessionId) => {
+  console.log(`Writing to deck ${sessionId}`)
   const query = `INSERT INTO games(session_id) VALUES ($1)`;
   const variables = [sessionId];
   return postgresService.write(query, variables);
 }
 
-const destroyGame = async (sessionId) => {
-  console.log(`Destroying game ${sessionId}`)
+const destroyDeck = async (sessionId) => {
+  console.log(`Destroying to deck ${sessionId}`)
   const query = `DELETE FROM games where session_id = $1`;
   const variables = [sessionId];
   return postgresService.destroy(query, variables);
 };
 
 module.exports = {
-  readGame,
-  writeGame,
-  destroyGame,
+  readDeck,
+  writeDeck,
+  destroyDeck,
 }

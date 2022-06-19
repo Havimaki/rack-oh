@@ -1,6 +1,13 @@
 FROM node:16.15
-
 WORKDIR /src
+
+# Install flyway cli according to
+# https://flywaydb.org/documentation/usage/commandline/ (but do not use 'sudo' because it's not available)
+RUN wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/7.9.0/flyway-commandline-7.9.0-linux-x64.tar.gz | tar xvz && ln -s `pwd`/flyway-7.9.0/flyway /usr/local/bin 
+
+
+# Copy migration scripts
+COPY db/sql ./db/sql
 
 COPY ./src src
 COPY ./package.json package.json

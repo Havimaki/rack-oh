@@ -17,10 +17,10 @@ CREATE TABLE flyway_schema_history (
 CREATE UNIQUE INDEX flyway_schema_history_pk ON flyway_schema_history(installed_rank int4_ops);
 CREATE INDEX flyway_schema_history_s_idx ON flyway_schema_history(success bool_ops);
 
--- CREATE TABLE games
--- (
---     id SERIAL,
---     sessionId integer
--- );
+CREATE TABLE games
+(
+    id SERIAL PRIMARY KEY,
+    session_id character varying(250) NOT NULL
+);
 
--- INSERT INTO games(sessionId) VALUES ('123');
+INSERT INTO games(session_id) VALUES ('123');

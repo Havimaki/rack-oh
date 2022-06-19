@@ -1,4 +1,5 @@
 require('module-alias/register')
+// const { migrate } = require('./migrations.js');
 const session = require('express-session')
 const express = require('express');
 const helmet = require('helmet');
@@ -10,6 +11,8 @@ const ApiError = require('./utils/ApiError');
 
 const app = express();
 const port = process.env.PORT || 5000;
+
+// migrate();
 
 // set security HTTP headers
 app.use(helmet());

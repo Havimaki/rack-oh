@@ -12,11 +12,11 @@ services:
       - /src/node_modules
     environment:
       NODE_ENV: local
-      DB_HOST: 0.0.0.0
-      DB_PORT: 5432
       DB_USER: root
-      DB_PASSWORD: password
-      DB_NAME: rackoh
+      DB_PASSWORD: root
+      DB_DB: rackoh
+      DB_HOST: postgres
+      DB_PORT: 5432
     links:
       - redis
       - postgres
@@ -34,9 +34,11 @@ services:
     image: postgres:14.1-alpine
     restart: always
     environment:
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=root
-      - POSTGRES_DB=rackoh
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: rackoh
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
     ports:
       - '7000:5432'
     volumes:

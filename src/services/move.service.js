@@ -16,7 +16,7 @@ const DISCARD_PILE_KEY = redisConstants.DISCARD_PILE;
  * Adds card to discard pile
  * @returns {game} cards
  */
-const addToDiscardPile = async (sessionId, cards) => {
+const writeToDiscard = async (sessionId, cards) => {
   const session = await redisService.create(sessionId, DISCARD_PILE_KEY, cards, 'object');
   return session[DISCARD_PILE_KEY];
 };
@@ -104,7 +104,7 @@ const readDiscardPile = async (sessionId) => {
 module.exports = {
   addToMainDeck,
   addToPlayerHand,
-  addToDiscardPile,
+  writeToDiscard,
   updateDiscardPile,
   updateMainDeck,
   updatePlayerHand,

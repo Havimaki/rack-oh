@@ -2,16 +2,23 @@
 
 const express = require('express');
 const { gameController } = require('@controllers');
-const { responseConstants } = require('@constants');
+const { responseCodes: {
+  GAME_CODES: {
+    ERROR,
+    SUCCESS,
+  },
+},
+} = require('@constants');
 
 // =============== CONSTS
 
 let router = express.Router();
 
-const GAME_ALREADY_EXISTS = responseConstants.GAME_ALREADY_EXISTS;
-const GAME_DOES_NOT_EXIST = responseConstants.GAME_DOES_NOT_EXIST;
-const GAME_RESET = responseConstants.GAME_RESET;
-
+const GAME_ALREADY_EXISTS = ERROR.CONFLICT;
+const GAME_DOES_NOT_EXIST = ERROR.NOT_FOUND;
+const GAME_RETRIEVED = SUCCESS.GET;
+const GAME_CREATED = SUCCESS.POST;
+const GAME_RESET = SUCCESS.PUT;
 
 // ===============  MODULE FUNCTIONS
 
@@ -20,14 +27,20 @@ router.get('/:id', async (req, res) => {
     params: { id },
   } = req
   try {
-    const game = await gameController.getGame(id);
+    const data = await gameController.getGame(id);
 
-    if (!!game) {
-      res.status(200).send({ id, ...game });
+    if (!data) {
+      res.status(404).send({
+        id,
+        message: GAME_DOES_NOT_EXIST,
+      });
     }
 
-    if (!game) {
-      res.status(404).send({ id, message: GAME_DOES_NOT_EXIST });
+    if (!!data) {
+      res.status(200).send({
+        id: data.session_id,
+        message: GAME_RETRIEVED,
+      });
     }
 
   } catch (err) {
@@ -42,14 +55,21 @@ router.post('/new', async (req, res) => {
     sessionID,
   } = req
   try {
-    const game = await gameController.createGame(sessionID, players)
+    const data = await gameController.createGame(sessionID, players)
 
-    if (!!game) {
-      res.status(200).send({ id: sessionID, ...game });
+    if (data.session_id) {
+      res.status(409).send({
+        id: sessionID,
+        message: GAME_ALREADY_EXISTS,
+      });
     }
 
-    if (!game) {
-      res.status(409).send({ id: sessionID, message: GAME_ALREADY_EXISTS });
+    if (!!data) {
+      res.status(200).send({
+        id: sessionID,
+        message: GAME_CREATED,
+        ...data
+      });
     }
 
   } catch (err) {
@@ -63,14 +83,20 @@ router.post('/reset/:id', async (req, res) => {
     params: { id },
   } = req
   try {
-    const game = await gameController.resetGame(id);
+    const data = await gameController.resetGame(id);
 
-    if (game) {
-      res.status(200).send({ id, message: GAME_RESET });
+    if (!data) {
+      res.status(404).send({
+        id,
+        message: GAME_DOES_NOT_EXIST,
+      });
     }
 
-    if (!game) {
-      res.status(404).send({ id, message: GAME_DOES_NOT_EXIST });
+    if (data) {
+      res.status(200).send({
+        id,
+        message: GAME_RESET,
+      });
     }
 
   } catch (err) {

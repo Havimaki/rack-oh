@@ -10,11 +10,12 @@
     "local:up": "docker-compose up",
     "local:start": "docker-compose up -d",
     "local:down": "docker-compose down",
+    "local:migrate": "flyway -configFiles=./db/flyway.conf migrate -outputType=json",
     "start": "nodemon ./src/app.js",
     "test": "jest --coverage",
-    "setNewDeck": "node -e 'require(\"./src/controllers/game.controller\").newDeck()'",
+    "createDeck": "node -e 'require(\"./src/controllers/deck.controller\").createDeck()'",
     "shuffleCards": "node -e 'require(\"./game\").shuffleCards()'",
-    "dealCards": "redis-cli -h 127.0.0.1 -p 6379 FLUSHDB && node -e 'require(\"./src/controllers/game.controller\").dealCards([], [\"danielle\", \"rando\"])'",
+    "createBoard": "redis-cli -h 127.0.0.1 -p 6379 FLUSHDB && node -e 'require(\"./src/controllers/deck.controller\").createBoard([], [\"danielle\", \"rando\"])'",
     "clearCache": "redis-cli -h 127.0.0.1 -p 6379 FLUSHDB"
   },
   "jest": {
@@ -51,13 +52,16 @@
     "nodemon": "2.0.4"
   },
   "dependencies": {
+    "child_process": "^1.0.2",
     "cors": "2.8.5",
+    "dotenv": "^16.0.1",
     "express": "4.17.1",
     "express-session": "1.17.1",
     "helmet": "4.4.1",
     "http-status": "1.5.0",
     "module-alias": "2.2.2",
     "pg": "^8.7.3",
+    "ramda": "^0.28.0",
     "redis": "3.1.2",
     "sequelize": "^6.21.0"
   },

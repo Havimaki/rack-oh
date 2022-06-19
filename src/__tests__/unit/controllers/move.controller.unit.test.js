@@ -5,10 +5,10 @@ const {
   },
 } = require('@constants');
 const {
-  gameController: {
-    newDeck,
+  deckController: {
+    createDeck,
     shuffleCards,
-    dealCards,
+    createBoard,
   },
   moveController: {
     reshuffleDiscardPile,
@@ -27,13 +27,13 @@ const {
 // ===============  HELPER FUNCTIONS
 describe('player moves', () => {
   const players = ["Danielle", "Rando"];
-  const mainDeck = shuffleCards(newDeck());
+  const mainDeck = shuffleCards(createDeck());
 
   describe('show card functions', () => {
     // FIX
     xit('Should only show selected player\'s cards', async () => {
       // Given
-      const gameCards = await dealCards(mainDeck, players);
+      const gameCards = await createBoard(mainDeck, players);
       const player = players[0];
       const playerName = `${PLAYER}${player}`;
 
@@ -86,7 +86,7 @@ describe('player moves', () => {
     // INCORRECT
     xit('Should throw  error if playerId is not passed in', async () => {
       // Given 
-      const dealtCards = await dealCards(mainDeck, players);
+      const dealtCards = await createBoard(mainDeck, players);
       const playerId = null;
 
       // Then
@@ -99,8 +99,8 @@ describe('player moves', () => {
   describe('select card functions', () => {
     xit('Should select one card from current player\'s hand', async () => {
       // Given
-      const deck = shuffleCards(newDeck());
-      const gameCards = await dealCards(deck, players);
+      const deck = shuffleCards(createDeck());
+      const gameCards = await createBoard(deck, players);
       const currentHand = await showPlayerHand(gameCards, players[0])
 
       // When
@@ -123,8 +123,8 @@ describe('player moves', () => {
 
     xit('Should throw error if more than one selected card passed in', async () => {
       // Given
-      const deck = shuffleCards(newDeck());
-      const gameCards = await dealCards(deck, players);
+      const deck = shuffleCards(createDeck());
+      const gameCards = await createBoard(deck, players);
       const currentHand = showPlayerHand(gameCards, players[0])
 
       // Then
@@ -139,8 +139,8 @@ describe('player moves', () => {
 
     xit('Should select top card of main deck', async () => {
       // Given
-      const deck = shuffleCards(newDeck());
-      const gameCards = await dealCards(deck, players);
+      const deck = shuffleCards(createDeck());
+      const gameCards = await createBoard(deck, players);
       const topCard = gameCards.mainDeck[0];
 
       // When
@@ -152,8 +152,8 @@ describe('player moves', () => {
 
     xit('Should select top card of discard pile', async () => {
       // Given
-      const deck = shuffleCards(newDeck());
-      const gameCards = await dealCards(deck, players);
+      const deck = shuffleCards(createDeck());
+      const gameCards = await createBoard(deck, players);
       const topDiscardCard = gameCards.discardPile[0];
 
       // When
@@ -205,8 +205,8 @@ describe('player moves', () => {
   describe('swap card functions', () => {
     xit('Should swap selected card from current hand with selected card from deck', async () => {
       //  Given
-      const deck = shuffleCards(newDeck());
-      const gameCards = await dealCards(deck, players);
+      const deck = shuffleCards(createDeck());
+      const gameCards = await createBoard(deck, players);
       const playerName = players[0];
       const currentHand = await showPlayerHand(gameCards, playerName)
 
@@ -223,8 +223,8 @@ describe('player moves', () => {
 
     xit('Should reshuffle discard pile if main deck is empty after swaping a card', async () => {
       // Given
-      const deck = await shuffleCards(newDeck());
-      const gameCards = await dealCards(deck, players);
+      const deck = await shuffleCards(createDeck());
+      const gameCards = await createBoard(deck, players);
       const cutDeck = gameCards.mainDeck.splice(1, gameCards.mainDeck.length);
       gameCards.discardPile = gameCards.discardPile.concat(cutDeck);
       const discardPileLength = gameCards.discardPile.length;
@@ -242,8 +242,8 @@ describe('player moves', () => {
 
     xit('Should maintain 10 cards in current hand after swapping cards', async () => {
       // Given
-      const deck = await shuffleCards(newDeck());
-      const gameCards = await dealCards(deck, players);
+      const deck = await shuffleCards(createDeck());
+      const gameCards = await createBoard(deck, players);
       const playerName = players[0];
       const currentHand = await showPlayerHand(gameCards, playerName)
 
@@ -259,8 +259,8 @@ describe('player moves', () => {
 
     xit('Should increase discard pile by 1 card after swapping cards', async () => {
       // Given
-      const deck = shuffleCards(newDeck());
-      const gameCards = await dealCards(deck, players);
+      const deck = shuffleCards(createDeck());
+      const gameCards = await createBoard(deck, players);
       const currentHand = showPlayerHand(gameCards, players[0])
       const discardPileLength = gameCards.discardPile.length;
 
@@ -276,8 +276,8 @@ describe('player moves', () => {
 
     xit('Should decrease main deck by 1 card after swapping cards', async () => {
       // Given
-      const deck = shuffleCards(newDeck());
-      const gameCards = await dealCards(deck, players);
+      const deck = shuffleCards(createDeck());
+      const gameCards = await createBoard(deck, players);
       const currentHand = await showPlayerHand(gameCards, players[0])
       const mainDeckLength = gameCards.mainDeck.length;
 
@@ -314,8 +314,8 @@ describe('player moves', () => {
 
     xit('Should swap selected card from current hand with selected card from deck', async () => {
       //  Given
-      const deck = shuffleCards(newDeck());
-      const gameCards = await dealCards(deck, players);
+      const deck = shuffleCards(createDeck());
+      const gameCards = await createBoard(deck, players);
       const playerName = players[0];
       const currentHand = showPlayerHand(gameCards, playerName)
 
@@ -332,8 +332,8 @@ describe('player moves', () => {
 
     xit('Should reshuffle discard pile if main deck is empty after swaping a card', async () => {
       // Given
-      const deck = shuffleCards(newDeck());
-      const gameCards = await dealCards(deck, players);
+      const deck = shuffleCards(createDeck());
+      const gameCards = await createBoard(deck, players);
       const cutDeck = gameCards.mainDeck.splice(1, gameCards.mainDeck.length);
       gameCards.discardPile = gameCards.discardPile.concat(cutDeck);
       const discardPileLength = gameCards.discardPile.length;
@@ -351,8 +351,8 @@ describe('player moves', () => {
 
     xit('Should maintain 10 cards in current hand after swapping cards', async () => {
       // Given
-      const deck = shuffleCards(newDeck());
-      const gameCards = await dealCards(deck, players);
+      const deck = shuffleCards(createDeck());
+      const gameCards = await createBoard(deck, players);
       const playerName = players[0];
       const currentHand = showPlayerHand(gameCards, playerName)
 
@@ -368,8 +368,8 @@ describe('player moves', () => {
 
     xit('Should increase discard pile by 1 card after swapping cards', async () => {
       // Given
-      const deck = shuffleCards(newDeck());
-      const gameCards = await dealCards(deck, players);
+      const deck = shuffleCards(createDeck());
+      const gameCards = await createBoard(deck, players);
       const currentHand = showPlayerHand(gameCards, players[0])
       const discardPileLength = gameCards.discardPile.length;
 
@@ -385,8 +385,8 @@ describe('player moves', () => {
 
     xit('Should decrease main deck by 1 card after swapping cards', async () => {
       // Given
-      const deck = shuffleCards(newDeck());
-      const gameCards = await dealCards(deck, players);
+      const deck = shuffleCards(createDeck());
+      const gameCards = await createBoard(deck, players);
       const currentHand = showPlayerHand(gameCards, players[0])
       const mainDeckLength = gameCards.mainDeck.length;
 

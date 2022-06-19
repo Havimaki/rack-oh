@@ -1,11 +1,13 @@
 // =============== IMPORTS
 const {
   gameController: {
-    newDeck,
     shuffleCards,
-    dealCards,
     isRackOh,
     checkForRackOh,
+  },
+  deckController: {
+    createDeck,
+    createBoard,
   },
 } = require('@controllers');
 
@@ -17,13 +19,13 @@ describe('createGame', () => { });
 
 
 const players = ["Danielle", "Rando"];
-const deck = shuffleCards(newDeck());
-describe('newDeck', () => {
+const deck = shuffleCards(createDeck());
+describe('createDeck', () => {
   it('Should deal a deck of 60 cards', () => {
     // Given
     const decks = [
-      newDeck(),
-      shuffleCards(newDeck())
+      createDeck(),
+      shuffleCards(createDeck())
     ];
 
     // Then
@@ -33,8 +35,8 @@ describe('newDeck', () => {
   it('Should always have a deck that contains every interger from 1 to 60', () => {
     // Given
     const decks = [
-      newDeck(),
-      shuffleCards(newDeck())
+      createDeck(),
+      shuffleCards(createDeck())
     ];
     const checkDecks = decks.map(deck => {
       return deck.filter(card => {
@@ -53,8 +55,8 @@ describe('newDeck', () => {
   it('Should contain no duplicate cards', () => {
     // Given
     const decks = [
-      newDeck(),
-      shuffleCards(newDeck())
+      createDeck(),
+      shuffleCards(createDeck())
     ];
 
     // Then
@@ -65,8 +67,8 @@ describe('newDeck', () => {
   it('Should return the same deck shuffled', () => {
     // Given
     const decks = {
-      unshuffled: newDeck(),
-      shuffled: shuffleCards(newDeck())
+      unshuffled: createDeck(),
+      shuffled: shuffleCards(createDeck())
     };
 
     expect(decks['shufffled']).not.toBe(decks['unshuffled']);
@@ -102,11 +104,11 @@ describe('shuffleCards', () => {
   });
 });
 
-describe('dealCards', () => {
+describe('createBoard', () => {
   xit('Should always deal a deck of cars with no duplicates between the main deck and discard pile', async () => {
     // Given
     // When
-    const gameCards = await dealCards(deck, players);
+    const gameCards = await createBoard(deck, players);
 
     // Then
     const checkForDuplicates = gameCards.mainDeck.filter(deckCard => {
@@ -118,7 +120,7 @@ describe('dealCards', () => {
   xit('Should always deal with a deck of 60 cards', async () => {
     // Given
     const emptyDeck = [];
-    const deck = await dealCards(emptyDeck, players);
+    const deck = await createBoard(emptyDeck, players);
 
     // Then 
     const mainDeck = deck.mainDeck.length;
@@ -132,7 +134,7 @@ describe('dealCards', () => {
   xit('Should deal exactly 10 cards to each player', async () => {
     // Given 
     // When
-    const dealtCards = await dealCards(deck, players);
+    const dealtCards = await createBoard(deck, players);
 
     // Then
     players.forEach((player) => {
@@ -143,7 +145,7 @@ describe('dealCards', () => {
   xit('Should deal and return with 1 card in discard pile', async () => {
     // Given 
     // When
-    const dealtCards = await dealCards(deck, players);
+    const dealtCards = await createBoard(deck, players);
 
     // Then
     expect(dealtCards.discardPile.length).toBe(1);
@@ -155,7 +157,7 @@ describe('dealCards', () => {
     const threePlayers = [...players, 'Rando2'];
 
     // When
-    const dealtCards = await dealCards(deck, threePlayers);
+    const dealtCards = await createBoard(deck, threePlayers);
 
     // Then
     expect(dealtCards.deck.length).toBe(mainDeckLength - dealtCards.discardPile.length - (threePlayers.length * 10))
@@ -166,52 +168,43 @@ describe('dealCards', () => {
     const fivePlayers = [...players, 'rando2', 'rando3', 'rando4'];
 
     // Then
-    await expect(dealCards(deck, fivePlayers)).rejects.toThrow('Cannot exceed amount of 4 players')
+    await expect(createBoard(deck, fivePlayers)).rejects.toThrow('Cannot exceed amount of 4 players')
   });
 
   it('Should throw error if there are no players', async () => {
     // Given 
-    const mainDeck = shuffleCards(newDeck());
+    const mainDeck = shuffleCards(createDeck());
 
     // Then
-    await expect(dealCards(mainDeck, [])).rejects.toThrow('There must be at least 2 players')
+    await expect(createBoard(mainDeck, [])).rejects.toThrow('There must be at least 2 players')
   });
 
 });
 
 describe('checkForRackOh', () => {
-  it('Should return playerId if player won', () => {
+  it('Should return true if hand is in increrasing order', () => {
     // Given
-    const playerId = 1;
-    const gameCards = {
-      players: {
-        "1": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-        "2": [59, 58, 57, 56, 49, 48, 47, 46, 39, 38]
-      }
-    }
+    const hand = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
     // When
-    const winner = checkForRackOh(gameCards, playerId);
+    const res = checkForRackOh(hand);
 
     // Then
-    expect(winner).toBe(playerId);
+    expect(res).toBe(true);
   });
 
-  it('Should throw error if playerId is not passed in when checking for winner', () => {
+  it('Should return false if hand is not in increrasing order', () => {
     // Given
-    const playerId = null;
-    const gameCards = {
-      players: {
-        "1": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-        "2": [59, 58, 57, 56, 49, 48, 47, 46, 39, 38]
-      }
-    }
+    const hand = [1, 2, 3, 4, 5, 6, 7, 8, 10, 9];
 
     // When
-    expect(() => {
-      checkForRackOh(gameCards, playerId);
-    }).toThrowError('playerId cannot be undefined')
+    const res = checkForRackOh(hand);
+
+    // Then
+    expect(res).toBe(false);
   });
+
+
 });
 
 describe('isRackoh', () => {
