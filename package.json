@@ -11,7 +11,7 @@
     "local:start": "docker-compose up -d",
     "local:down": "docker-compose down",
     "local:migrate": "flyway -configFiles=./db/flyway.conf migrate -outputType=json",
-    "start": "nodemon --legacy-watch ./src/index.js",
+    "start": "nodemon --legacy-watch ./src/app.js",
     "test": "jest --coverage",
     "createDeck": "node -e 'require(\"./src/controllers/deck.controller\").createDeck()'",
     "shuffleCards": "node -e 'require(\"./game\").shuffleCards()'",
@@ -52,10 +52,11 @@
     "nodemon": "2.0.4"
   },
   "dependencies": {
+    "body-parser": "^1.20.0",
     "child_process": "^1.0.2",
     "cors": "2.8.5",
     "dotenv": "^16.0.1",
-    "express": "4.17.1",
+    "express": "^4.17.1",
     "express-session": "1.17.1",
     "helmet": "4.4.1",
     "http-status": "1.5.0",
@@ -63,7 +64,8 @@
     "pg": "^8.7.3",
     "ramda": "^0.28.0",
     "redis": "3.1.2",
-    "sequelize": "^6.21.0"
+    "sequelize": "^6.21.0",
+    "winston": "^3.7.2"
   },
   "_moduleAliases": {
     "@root": ".",

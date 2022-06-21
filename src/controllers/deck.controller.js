@@ -2,8 +2,11 @@
 const {
   deckService,
 } = require('../services/index');
+const Logger = require('../utils/Logger');
 
 // =============== CONSTS
+
+const LOGGER = new Logger('DeckController');
 
 // ===============  MODULE FUNCTIONS
 
@@ -11,13 +14,13 @@ const {
  * Returns a new deck
  * @returns {Array} deck
  */
-const createDeck = () => {
-  console.log(`createDeck`)
+const createDeck = (logger = LOGGER) => {
+  logger.info(`createDeck`)
   let deck = [];
   for (i = 1; i < 61; i++) {
     deck.push(i)
   }
-  return shuffleCards(deck);
+  return shuffleCards(deck, logger);
 };
 
 /**
@@ -26,14 +29,14 @@ const createDeck = () => {
  * @param {Number} playerCount 
  * @returns {Object} gameCards 
  */
-const createBoard = async (cards = [], players = []) => {
-  console.log(`createBoard`)
-  if (!cards.length) cards = createDeck();
+const createBoard = async (cards = [], players = [], logger = LOGGER) => {
+  logger.info(`createBoard`)
+  if (!cards.length) cards = createDeck(logger);
   if (!players.length) throw new Error('There must be at least 2 players')
   if (players.length > 4) throw new Error('Cannot exceed amount of 4 players')
 
-  const { hands, deck } = await addToPlayerHands(players, cards);
-  const { discard, deck: updatedDeck } = await addToDiscardPile(deck)
+  const { hands, deck } = await addToPlayerHands(players, cards, logger);
+  const { discard, deck: updatedDeck } = await addToDiscardPile(deck, logger)
   // await addToMainDeck(deck);
 
   return {
@@ -45,8 +48,8 @@ const createBoard = async (cards = [], players = []) => {
 
 // ===============  HELPER FUNCTIONS
 
-const addToPlayerHands = async (players, cards) => {
-  console.log(`addToPlayerHands`)
+const addToPlayerHands = async (players, cards, logger = LOGGER) => {
+  logger.info(`addToPlayerHands`)
   let hands = new Array(players.length - 1);
   for (let player = 0; player < players.length; player++) {
     hands[player] = {
@@ -61,8 +64,8 @@ const addToPlayerHands = async (players, cards) => {
   };
 }
 
-const addToDiscardPile = async (deck) => {
-  console.log(`addToDiscardPile`)
+const addToDiscardPile = async (deck, logger = LOGGER) => {
+  logger.info(`addToDiscardPile`)
   const topCard = deck.splice(0, 1);
   let discard = topCard;
   // await moveService.writeToDiscard(discard);
@@ -81,8 +84,8 @@ const addToDiscardPile = async (deck) => {
  * @param {Array} deck 
  * @returns {Array} deck 
  */
-const shuffleCards = (deck = []) => {
-  console.log('shuffleCards')
+const shuffleCards = (deck = [], logger = LOGGER) => {
+  logger.info('shuffleCards')
   if (deck.length <= 1) {
     throw new Error('There must be at least 2 cards to shuffle')
   }

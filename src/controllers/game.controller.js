@@ -7,35 +7,38 @@ const {
   createDeck,
   createBoard,
 } = require('./deck.controller');
+const Logger = require('../utils/Logger');
 
 // =============== CONSTS
 
+const LOGGER = new Logger('GameController');
+
 // ===============  MODULE FUNCTIONS
 
-const getGame = async (id) => {
-  console.log(`getGame ${id}`);
-  return gameService.read(id);
+const getGame = async (id, logger = LOGGER) => {
+  logger.info(`Getting game`);
+  return gameService.read(id, logger);
 };
 
 
-const createGame = async (id, players = []) => {
-  console.log(`createGame ${id}`);
-  const record = await gameService.read(id);
+const createGame = async (id, players = [], logger = LOGGER) => {
+  logger.info(`Creating game`);
+  const record = await gameService.read(id, logger);
   if (record.length) return null;
 
-  await gameService.write(id);
+  await gameService.write(id, logger);
 
-  const cards = createDeck();
-  return createBoard(cards, players);
+  const cards = createDeck(logger);
+  return createBoard(cards, players, logger);
 };
 
-const resetGame = async (id) => {
-  console.log(`resetGame ${id}`)
+const resetGame = async (id, logger = LOGGER) => {
+  logger.info(`resetGame`)
 
-  const record = await gameService.read(id);
+  const record = await gameService.read(id, logger);
   if (!record.length) return null;
 
-  return gameService.destroy(id);
+  return gameService.destroy(id, logger);
 };
 
 // ===============  HELPER FUNCTIONS
