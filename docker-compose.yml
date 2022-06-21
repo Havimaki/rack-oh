@@ -9,6 +9,7 @@ services:
     ports:
       - '5000:5000'
     volumes:
+      - '.:/src'
       - /src/node_modules
     environment:
       NODE_ENV: local

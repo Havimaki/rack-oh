@@ -17,7 +17,7 @@ const {
  * @return {Array} 
  */
 async function showPlayerHand(sessionId, player = null) {
-  const session = await gameService.readGame(sessionId);
+  const session = await gameService.read(sessionId);
   if (!session) {
     throw new Error('General error');
   }
@@ -38,7 +38,7 @@ async function showPlayerHand(sessionId, player = null) {
  * @return {Array}
  */
 async function showDiscardPile(sessionId) {
-  const session = await gameService.readGame(sessionId);
+  const session = await gameService.read(sessionId);
   if (!session) {
     throw new Error('General error');
   }
@@ -55,7 +55,7 @@ async function showDiscardPile(sessionId) {
  * @return {Object} gameCards
  */
 async function updateSwappedCards(sessionId, playerId = null, selectedHandCard = null, drawPile = null) {
-  const session = await gameService.readGame(sessionId);
+  const session = await gameService.read(sessionId);
   if (!session) {
     throw new Error('General error');
   }
@@ -100,7 +100,7 @@ async function updateSwappedCards(sessionId, playerId = null, selectedHandCard =
  */
 async function reshuffleDiscardPile(sessionId) {
   // get session
-  const session = await gameService.readGame(sessionId);
+  const session = await gameService.read(sessionId);
   if (session[MAIN_DECK_KEY].length != 0) {
     throw new Error('Main deck needs to be empty for a reshuffle');
   };
@@ -118,7 +118,7 @@ async function reshuffleDiscardPile(sessionId) {
   await moveService.updateMainDeck(sessionId, session[MAIN_DECK_KEY]);
 
   // get updated game
-  const game = await gameService.readGame(sessionId);
+  const game = await gameService.read(sessionId);
   return { ...game };
 }
 
@@ -130,7 +130,7 @@ async function reshuffleDiscardPile(sessionId) {
  */
 async function selectCardFromMainDeck(sessionId) {
   // get session
-  const session = await gameService.readGame(sessionId);
+  const session = await gameService.read(sessionId);
   if (!session) {
     throw new Error('General error');
   }
@@ -151,7 +151,7 @@ async function selectCardFromMainDeck(sessionId) {
  * @return {Number}
  */
 async function selectCardFromPlayerHand(sessionId, card = null, name = null) {
-  const session = await gameService.readGame(sessionId);
+  const session = await gameService.read(sessionId);
   if (!session) {
     throw new Error('General error');
   }
@@ -192,7 +192,7 @@ async function selectCardFromPlayerHand(sessionId, card = null, name = null) {
  */
 async function selectCardFromDiscardPile(sessionId) {
   // get session
-  const session = await gameService.readGame(sessionId);
+  const session = await gameService.read(sessionId);
   if (!session) {
     throw new Error('General error');
   }

@@ -6,7 +6,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 
 const httpStatus = require('http-status');
-const router = require('./routes/v1/')
+const router = require('./routes/v1')
 const ApiError = require('./utils/ApiError');
 
 const app = express();

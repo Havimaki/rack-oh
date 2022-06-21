@@ -13,43 +13,29 @@ const {
 // ===============  MODULE FUNCTIONS
 
 const getGame = async (id) => {
-  console.log(`getGame ${id}`)
-
-  const game = await gameService.readGame(id);
-  if (!game.length) return game;
-
-  return game[0];
+  console.log(`getGame ${id}`);
+  return gameService.read(id);
 };
 
+
 const createGame = async (id, players = []) => {
-  console.log(`createGame ${id}`)
+  console.log(`createGame ${id}`);
+  const record = await gameService.read(id);
+  if (record.length) return null;
 
-  const game = await gameService.readGame(id);
-  if (game.length) return game;
+  await gameService.write(id);
 
-  await gameService.writeGame(id);
-
-  const cards = createDeck(id);
-  const {
-    deck,
-    discard,
-    hands,
-  } = createBoard(id, cards, players);
-  return {
-    deck,
-    discard,
-    hands,
-  }
+  const cards = createDeck();
+  return createBoard(cards, players);
 };
 
 const resetGame = async (id) => {
   console.log(`resetGame ${id}`)
 
-  const game = await gameService.readGame(id);
-  if (!game.length) return 0;
+  const record = await gameService.read(id);
+  if (!record.length) return null;
 
-  await gameService.destroyGame(id);
-  return 1;
+  return gameService.destroy(id);
 };
 
 // ===============  HELPER FUNCTIONS

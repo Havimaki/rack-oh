@@ -30,18 +30,17 @@ router.get('/:id', async (req, res) => {
     const data = await gameController.getGame(id);
 
     if (!data) {
-      res.status(404).send({
+      return res.status(404).send({
         id,
         message: GAME_DOES_NOT_EXIST,
       });
     }
 
-    if (!!data) {
-      res.status(200).send({
-        id: data.session_id,
-        message: GAME_RETRIEVED,
-      });
-    }
+    return res.status(200).send({
+      id: data[0].session_id,
+      message: GAME_RETRIEVED,
+    });
+
 
   } catch (err) {
     console.log(err)
@@ -57,20 +56,19 @@ router.post('/new', async (req, res) => {
   try {
     const data = await gameController.createGame(sessionID, players)
 
-    if (data.session_id) {
-      res.status(409).send({
+    if (!data) {
+      return res.status(409).send({
         id: sessionID,
         message: GAME_ALREADY_EXISTS,
       });
     }
 
-    if (!!data) {
-      res.status(200).send({
-        id: sessionID,
-        message: GAME_CREATED,
-        ...data
-      });
-    }
+    return res.status(200).send({
+      id: sessionID,
+      message: GAME_CREATED,
+      ...data
+    });
+
 
   } catch (err) {
     console.log(err);
@@ -86,18 +84,17 @@ router.post('/reset/:id', async (req, res) => {
     const data = await gameController.resetGame(id);
 
     if (!data) {
-      res.status(404).send({
+      return res.status(404).send({
         id,
         message: GAME_DOES_NOT_EXIST,
       });
     }
 
-    if (data) {
-      res.status(200).send({
-        id,
-        message: GAME_RESET,
-      });
-    }
+    return res.status(200).send({
+      id,
+      message: GAME_RESET,
+    });
+
 
   } catch (err) {
     console.log(err);

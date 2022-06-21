@@ -11,8 +11,8 @@ const {
  * Returns a new deck
  * @returns {Array} deck
  */
-const createDeck = (id) => {
-  console.log(`Creating deck for game ${id}`)
+const createDeck = () => {
+  console.log(`createDeck`)
   let deck = [];
   for (i = 1; i < 61; i++) {
     deck.push(i)
@@ -26,14 +26,14 @@ const createDeck = (id) => {
  * @param {Number} playerCount 
  * @returns {Object} gameCards 
  */
-const createBoard = async (id, cards = [], players = []) => {
-  console.log(`Creating board for game ${id}`)
+const createBoard = async (cards = [], players = []) => {
+  console.log(`createBoard`)
   if (!cards.length) cards = createDeck();
   if (!players.length) throw new Error('There must be at least 2 players')
   if (players.length > 4) throw new Error('Cannot exceed amount of 4 players')
 
-  const { hands, deck } = await addToPlayerHands(id, players, cards);
-  const { discard, deck: updatedDeck } = await addToDiscardPile(id, deck)
+  const { hands, deck } = await addToPlayerHands(players, cards);
+  const { discard, deck: updatedDeck } = await addToDiscardPile(deck)
   // await addToMainDeck(deck);
 
   return {
@@ -45,8 +45,8 @@ const createBoard = async (id, cards = [], players = []) => {
 
 // ===============  HELPER FUNCTIONS
 
-const addToPlayerHands = async (id, players, cards) => {
-  console.log(`Adding to player hands for game ${id}`)
+const addToPlayerHands = async (players, cards) => {
+  console.log(`addToPlayerHands`)
   let hands = new Array(players.length - 1);
   for (let player = 0; player < players.length; player++) {
     hands[player] = {
@@ -61,10 +61,10 @@ const addToPlayerHands = async (id, players, cards) => {
   };
 }
 
-const addToDiscardPile = async (id, deck) => {
-  console.log(`Adding to discard pile for game ${id}`)
+const addToDiscardPile = async (deck) => {
+  console.log(`addToDiscardPile`)
   const topCard = deck.splice(0, 1);
-  let discard = [topCard];
+  let discard = topCard;
   // await moveService.writeToDiscard(discard);
   return {
     discard,
@@ -82,6 +82,7 @@ const addToDiscardPile = async (id, deck) => {
  * @returns {Array} deck 
  */
 const shuffleCards = (deck = []) => {
+  console.log('shuffleCards')
   if (deck.length <= 1) {
     throw new Error('There must be at least 2 cards to shuffle')
   }
