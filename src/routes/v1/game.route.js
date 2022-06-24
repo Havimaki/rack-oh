@@ -15,7 +15,7 @@ const Logger = require('../../utils/Logger');
 
 let router = express.Router();
 
-const LOGGER = new Logger('GameRoute');
+const LOGGER = new Logger('Game');
 
 const GAME_ALREADY_EXISTS = ERROR.CONFLICT;
 const GAME_DOES_NOT_EXIST = ERROR.NOT_FOUND;
@@ -31,6 +31,7 @@ router.get('/:id', async (req, res) => {
   } = req
   try {
     LOGGER.setRequestId(id)
+    LOGGER.setFuncName('get');
     const data = await gameController.getGame(id, LOGGER);
 
     if (!data) {
@@ -59,6 +60,8 @@ router.post('/new', async (req, res) => {
   } = req
   try {
     LOGGER.setRequestId(sessionID)
+    LOGGER.setFuncName('post');
+
     const data = await gameController.createGame(sessionID, players, LOGGER)
 
     if (!data) {
@@ -87,6 +90,8 @@ router.post('/reset/:id', async (req, res) => {
   } = req
   try {
     LOGGER.setRequestId(id)
+    LOGGER.setFuncName('post:reset');
+
     const data = await gameController.resetGame(id, LOGGER);
 
     if (!data) {

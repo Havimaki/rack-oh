@@ -16,15 +16,15 @@ const LOGGER = new Logger('GameController');
 // ===============  MODULE FUNCTIONS
 
 const getGame = async (id, logger = LOGGER) => {
-  logger.info(`Getting game`);
+  logger.setFuncName('getGame');
+
   return gameService.read(id, logger);
 };
 
-
 const createGame = async (id, players = [], logger = LOGGER) => {
-  logger.info(`Creating game`);
+  logger.setFuncName('createGame');
   const record = await gameService.read(id, logger);
-  if (record.length) return null;
+  if (record.length) return null; // already exists, throw error
 
   await gameService.write(id, logger);
 
@@ -33,10 +33,10 @@ const createGame = async (id, players = [], logger = LOGGER) => {
 };
 
 const resetGame = async (id, logger = LOGGER) => {
-  logger.info(`resetGame`)
+  logger.setFuncName('resetGame');
 
   const record = await gameService.read(id, logger);
-  if (!record.length) return null;
+  if (!record.length) return null; // does not exist, throw error
 
   return gameService.destroy(id, logger);
 };

@@ -15,7 +15,7 @@ const LOGGER = new Logger('DeckController');
  * @returns {Array} deck
  */
 const createDeck = (logger = LOGGER) => {
-  logger.info(`createDeck`)
+  logger.setFuncName('createDeck');
   let deck = [];
   for (i = 1; i < 61; i++) {
     deck.push(i)
@@ -30,7 +30,7 @@ const createDeck = (logger = LOGGER) => {
  * @returns {Object} gameCards 
  */
 const createBoard = async (cards = [], players = [], logger = LOGGER) => {
-  logger.info(`createBoard`)
+  logger.setFuncName('createBoard');
   if (!cards.length) cards = createDeck(logger);
   if (!players.length) throw new Error('There must be at least 2 players')
   if (players.length > 4) throw new Error('Cannot exceed amount of 4 players')
@@ -49,7 +49,7 @@ const createBoard = async (cards = [], players = [], logger = LOGGER) => {
 // ===============  HELPER FUNCTIONS
 
 const addToPlayerHands = async (players, cards, logger = LOGGER) => {
-  logger.info(`addToPlayerHands`)
+  logger.setFuncName('addToPlayerHands')
   let hands = new Array(players.length - 1);
   for (let player = 0; player < players.length; player++) {
     hands[player] = {
@@ -65,7 +65,7 @@ const addToPlayerHands = async (players, cards, logger = LOGGER) => {
 }
 
 const addToDiscardPile = async (deck, logger = LOGGER) => {
-  logger.info(`addToDiscardPile`)
+  logger.setFuncName('addToDiscardPile')
   const topCard = deck.splice(0, 1);
   let discard = topCard;
   // await moveService.writeToDiscard(discard);
@@ -85,7 +85,7 @@ const addToDiscardPile = async (deck, logger = LOGGER) => {
  * @returns {Array} deck 
  */
 const shuffleCards = (deck = [], logger = LOGGER) => {
-  logger.info('shuffleCards')
+  logger.setFuncName('shuffleCards')
   if (deck.length <= 1) {
     throw new Error('There must be at least 2 cards to shuffle')
   }

@@ -10,21 +10,21 @@ const LOGGER = new Logger('gameService');
 // ===============  MODULE FUNCTIONS
 
 const read = async (sessionId, logger = LOGGER) => {
-  logger.info(`Reading game`);
+  logger.setFuncName('read');
   const query = `SELECT * FROM games where session_id = $1`;
   const variables = [sessionId];
   return postgresService.read(query, variables);
 }
 
 const write = async (sessionId, logger = LOGGER) => {
-  logger.info(`Writing game`);
+  logger.setFuncName(`Writing game`);
   const query = `INSERT INTO games(session_id) VALUES ($1)`;
   const variables = [sessionId];
   return postgresService.write(query, variables);
 }
 
 const destroy = async (sessionId, logger = LOGGER) => {
-  logger.info(`Destroying game`);
+  logger.setFuncName(`Destroying game`);
   const query = `DELETE FROM games where session_id = $1`;
   const variables = [sessionId];
   return postgresService.destroy(query, variables);

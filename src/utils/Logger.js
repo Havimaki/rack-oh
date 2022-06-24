@@ -5,11 +5,19 @@ const dateFormat = () => {
 };
 
 const baseLog = (info, route) => {
-  return `${dateFormat()} | ${info.level.toUpperCase()} | module:${route} | `;
+  return `${dateFormat()} | ${info.level.toUpperCase()} | `;
 };
 
 const appendRequestId = (message, requestId) => {
   return message + `requestId:${requestId} | `;
+};
+
+const appendModuleName = (message, route) => {
+  return message + `module:${route} | `;
+};
+
+const appendFunctionName = (message, func) => {
+  return message + `function:${func} | `;
 };
 
 const appendObject = (message, info) => {
@@ -24,11 +32,13 @@ const appendInfoMessage = (message, info) => {
   return message + `${info.message} `;
 }
 
+
 class LoggerService {
-  constructor(route) {
+  constructor(route, func) {
     this.log_data = null;
     this.request_id = null;
     this.route = route;
+    this.func = func;
     const logger = winston.createLogger({
       transports: [
         new winston.transports.Console(),
@@ -37,6 +47,8 @@ class LoggerService {
       format: winston.format.printf((info) => {
         let message = baseLog(info, route);
         if (this.request_id) message = appendRequestId(message, this.request_id);
+        if (this.route) message = appendModuleName(message, route)
+        if (this.f) message = appendFunctionName(message, func)
         if (info.obj) message = appendObject(message, info);
         if (this.log_data) message = appendLogData(message, this.log_data);
         return appendInfoMessage(message, info);
@@ -47,6 +59,16 @@ class LoggerService {
 
   setLogData(log_data) {
     this.log_data = log_data
+  };
+
+  setModuleName(route, func) {
+    this.route = route;
+    this.logger.log('info', `func:${func}`)
+  };
+
+  setFuncName(func) {
+    this.func = func;
+    this.logger.log('info', `func:${func}`)
   };
 
   setRequestId(request_id) {
@@ -83,4 +105,5 @@ class LoggerService {
     })
   };
 };
+
 module.exports = LoggerService; 
